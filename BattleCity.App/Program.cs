@@ -6,7 +6,29 @@ namespace BattleCity.App
 	{
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Hello World!");
+			Console.WriteLine("Press ESC to stop");
+			ConsoleKeyInfo keyInfo;
+			do
+			{
+				keyInfo = Console.ReadKey(true);
+
+				switch (keyInfo.Key)
+				{
+					case ConsoleKey.UpArrow:
+						Console.WriteLine("Up");
+						break;
+					case ConsoleKey.RightArrow:
+						Console.WriteLine("Right");
+						break;
+					case ConsoleKey.DownArrow:
+						Console.WriteLine("Down");
+						break;
+					case ConsoleKey.LeftArrow:
+						Console.WriteLine("Left");
+						break;
+				}
+			} 
+			while (keyInfo.Key != ConsoleKey.Escape);
 		}
 	}
 }
