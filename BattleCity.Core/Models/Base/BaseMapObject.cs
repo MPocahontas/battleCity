@@ -7,9 +7,9 @@ namespace BattleCity.Core.Models.Base
 		private readonly int _width;
 		private readonly int _height;
 
-		public int X { get; }
+		public int X { get; protected set; }
 
-		public int Y { get; }
+		public int Y { get; protected set; }
 		
 		protected BaseMapObject(int x, int y, int width, int height)
 		{
