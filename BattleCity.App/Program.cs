@@ -1,13 +1,16 @@
 ﻿using System;
-using BattleCity.Core.Services;
+using BattleCity.Core;
 using BattleCity.Core.Services.Implementations;
 
 namespace BattleCity.App
 {
 	class Program
 	{
+		private const int ConsoleExtraPart = 2;
+
 		static void Main(string[] args)
 		{
+			Console.SetWindowSize(Constants.MapWidth + ConsoleExtraPart, Constants.MapHeight + ConsoleExtraPart);
 			var mapGenerator = new MapGenerator();
 			var map = mapGenerator.Generate();
 			var painter = new ConsoleMapPainter();
