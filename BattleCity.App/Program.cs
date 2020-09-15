@@ -54,8 +54,6 @@ namespace BattleCity.App
 						gameEngine.ShootTankA();
 						break;
 				}
-
-				Thread.Sleep(100);
 			} 
 			while (keyInfo.Key != ConsoleKey.Escape);
 		}

@@ -1,4 +1,5 @@
 ﻿using BattleCity.Core.Models;
+using BattleCity.Core.Models.Base;
 using BattleCity.Core.Services.Abstractions;
 
 namespace BattleCity.Core.Services.Implementations
@@ -7,10 +8,7 @@ namespace BattleCity.Core.Services.Implementations
 	{
 		public bool IsDetected(Tank tank, Map map)
 		{
-			if (tank.X < 0 || tank.X + Tank.Width >= Constants.MapWidth)
-				return true;
-
-			if (tank.Y < 0 || tank.Y + Tank.Height >= Constants.MapHeight)
+			if (IsOutOfTheMap(tank, Tank.Width, Tank.Height))
 				return true;
 
 			foreach (var brickWall in map.BrickWalls)
@@ -41,6 +39,17 @@ namespace BattleCity.Core.Services.Implementations
 				if (tank.GetRectangle().IntersectsWith(map.TankA.GetRectangle()))
 					return true;
 			}
+
+			return false;
+		}
+
+		public bool IsOutOfTheMap(BaseMapObject src, int width, int height)
+		{
+			if (src.X < 0 || src.X + width >= Constants.MapWidth)
+				return true;
+
+			if (src.Y < 0 || src.Y + height >= Constants.MapHeight)
+				return true;
 
 			return false;
 		}

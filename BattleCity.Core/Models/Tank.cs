@@ -1,4 +1,5 @@
-﻿using BattleCity.Core.Enums;
+﻿using System.Drawing;
+using BattleCity.Core.Enums;
 using BattleCity.Core.Models.Base;
 
 namespace BattleCity.Core.Models
@@ -51,5 +52,8 @@ namespace BattleCity.Core.Models
 			X = _oldX;
 			Y = _oldY;
 		}
+
+		public Rectangle GetOldRectangle() 
+			=> new Rectangle(_oldX, _oldY, Width, Height);
 	}
 }

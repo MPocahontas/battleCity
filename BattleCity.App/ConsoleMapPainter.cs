@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using BattleCity.Core;
 using BattleCity.Core.Enums;
 using BattleCity.Core.Models;
@@ -32,6 +33,34 @@ namespace BattleCity.App
 			Paint(map.TankA, ConsoleColor.Red);
 			Paint(map.TankB, ConsoleColor.DarkBlue);
 			
+			Console.SetCursorPosition(0, Constants.MapHeight);
+		}
+
+		public void Redraw(Bullet bullet)
+		{
+			Clear(bullet.GetOldRectangle());
+			Paint(bullet, ConsoleColor.Gray);
+			Console.SetCursorPosition(0, Constants.MapHeight);
+		}
+
+		public void Redraw(Tank tank, Map map)
+		{
+			Clear(tank.GetOldRectangle());
+			Paint(tank, tank.Equals(map.TankA) ? ConsoleColor.Red : ConsoleColor.DarkBlue);
+			Console.SetCursorPosition(0, Constants.MapHeight);
+		}
+
+		public void Clear(Rectangle rectangle)
+		{
+			for (int i = rectangle.Left; i <= rectangle.Right; i++)
+			{
+				for (int j = rectangle.Top; j <= rectangle.Bottom; j++)
+				{
+					Console.SetCursorPosition(i, j);
+					Console.Write(" ");
+				}
+			}
+
 			Console.SetCursorPosition(0, Constants.MapHeight);
 		}
 
