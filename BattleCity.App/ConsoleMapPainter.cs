@@ -28,6 +28,9 @@ namespace BattleCity.App
 				Paint(river, ConsoleColor.Blue);
 			}
 
+			Paint(map.TankA, ConsoleColor.Red);
+			Paint(map.TankB, ConsoleColor.DarkBlue);
+
 			Console.SetCursorPosition(0, Constants.MapHeight);
 		}
 
