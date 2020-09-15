@@ -9,7 +9,7 @@ namespace BattleCity.Core.Models
 		public const int Width = 5;
 
 		private const int XSpeed = 2;
-		private const int YSpeed = 2;
+		private const int YSpeed = 1;
 
 		private Direction _gunDirection;
 		private int _oldX;
