@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using BattleCity.Core;
 using BattleCity.Core.Enums;
 using BattleCity.Core.Services.Implementations;
@@ -53,6 +54,8 @@ namespace BattleCity.App
 						gameEngine.ShootTankA();
 						break;
 				}
+
+				Thread.Sleep(100);
 			} 
 			while (keyInfo.Key != ConsoleKey.Escape);
 		}

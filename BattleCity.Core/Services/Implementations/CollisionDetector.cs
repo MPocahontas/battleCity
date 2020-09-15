@@ -31,6 +31,17 @@ namespace BattleCity.Core.Services.Implementations
 					return true;
 			}
 
+			if (tank.Equals(map.TankA))
+			{
+				if (tank.GetRectangle().IntersectsWith(map.TankB.GetRectangle()))
+					return true;
+			}
+			else
+			{
+				if (tank.GetRectangle().IntersectsWith(map.TankA.GetRectangle()))
+					return true;
+			}
+
 			return false;
 		}
 	}
