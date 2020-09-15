@@ -11,7 +11,7 @@ namespace BattleCity.App
 		static void Main(string[] args)
 		{
 			Console.SetWindowSize(Constants.MapWidth + ConsoleExtraPart, Constants.MapHeight + ConsoleExtraPart);
-			var mapGenerator = new MapGenerator();
+			var mapGenerator = new SimpleMapGenerator();
 			var map = mapGenerator.Generate();
 			var painter = new ConsoleMapPainter();
 			painter.Paint(map);

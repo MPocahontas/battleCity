@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using BattleCity.Core.Models;
+using BattleCity.Core.Services.Abstractions;
 
 namespace BattleCity.Core.Services.Implementations
 {
-	public class MapGenerator
+	public class SimpleMapGenerator : IMapGenerator
 	{
 		public Map Generate()
 		{
