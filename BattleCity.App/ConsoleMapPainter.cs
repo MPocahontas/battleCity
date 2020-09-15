@@ -1,9 +1,10 @@
 ﻿using System;
 using BattleCity.Core.Models;
+using BattleCity.Core.Services.Abstractions;
 
-namespace BattleCity.Core.Services
+namespace BattleCity.App
 {
-	public class MapPainter
+	public class ConsoleMapPainter : IMapPainter
 	{
 		public void Paint(Map map)
 		{

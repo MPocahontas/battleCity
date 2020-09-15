@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using BattleCity.Core.Models;
 
-namespace BattleCity.Core.Services
+namespace BattleCity.Core.Services.Implementations
 {
 	public class MapGenerator
 	{

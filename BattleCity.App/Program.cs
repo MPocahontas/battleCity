@@ -1,5 +1,6 @@
 ﻿using System;
 using BattleCity.Core.Services;
+using BattleCity.Core.Services.Implementations;
 
 namespace BattleCity.App
 {
@@ -9,7 +10,7 @@ namespace BattleCity.App
 		{
 			var mapGenerator = new MapGenerator();
 			var map = mapGenerator.Generate();
-			var painter = new MapPainter();
+			var painter = new ConsoleMapPainter();
 			painter.Paint(map);
 			//Console.WriteLine("Press ESC to stop");
 			ConsoleKeyInfo keyInfo;
