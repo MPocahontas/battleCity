@@ -32,13 +32,13 @@ namespace BattleCity.Core.Models
 			switch (direction)
 			{
 				case Direction.Up:
-					Y += YSpeed;
+					Y -= YSpeed;
 					break;
 				case Direction.Right:
 					X += XSpeed;
 					break;
 				case Direction.Down:
-					Y -= YSpeed;
+					Y += YSpeed;
 					break;
 				case Direction.Left:
 					X -= XSpeed;
