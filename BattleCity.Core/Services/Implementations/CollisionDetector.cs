@@ -7,7 +7,7 @@ namespace BattleCity.Core.Services.Implementations
 	{
 		public bool IsDetected(Tank tank, Map map)
 		{
-			throw new System.NotImplementedException();
+			return false;
 		}
 	}
 }
