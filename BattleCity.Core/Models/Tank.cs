@@ -5,8 +5,8 @@ namespace BattleCity.Core.Models
 {
 	public class Tank : BaseMapObject
 	{
-		private const int Height = 5;
-		private const int Width = 5;
+		public const int Height = 5;
+		public const int Width = 5;
 
 		private const int XSpeed = 2;
 		private const int YSpeed = 2;

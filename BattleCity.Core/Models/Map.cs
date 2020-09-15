@@ -22,7 +22,7 @@ namespace BattleCity.Core.Models
 			Rivers = rivers;
 
 			TankA = new Tank(0, Constants.MapHeight / 2, Direction.Right);
-			TankB = new Tank(0, Constants.MapHeight / 2, Direction.Left);
+			TankB = new Tank(Constants.MapWidth - Tank.Width - 1, Constants.MapHeight / 2, Direction.Left);
 		}
 	}
 }
