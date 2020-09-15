@@ -18,6 +18,7 @@ namespace BattleCity.Core.Services.Implementations
 			_painter = painter;
 			_collisionDetector = collisionDetector;
 			_map = mapGenerator.Generate();
+			_painter.Paint(_map);
 		}
 
 		public void MoveTankA(Direction direction)
@@ -43,7 +44,7 @@ namespace BattleCity.Core.Services.Implementations
 		private void MoveTank(Tank tank, Direction direction)
 		{
 			tank.Move(direction);
-			if (_collisionDetector.IsCollisionDetected(tank, _map))
+			if (_collisionDetector.IsDetected(tank, _map))
 			{
 				tank.RollbackState();
 			}

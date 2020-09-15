@@ -1,5 +1,6 @@
 ﻿using System;
 using BattleCity.Core;
+using BattleCity.Core.Enums;
 using BattleCity.Core.Services.Implementations;
 
 namespace BattleCity.App
@@ -11,11 +12,9 @@ namespace BattleCity.App
 		static void Main(string[] args)
 		{
 			Console.SetWindowSize(Constants.MapWidth + ConsoleExtraPart, Constants.MapHeight + ConsoleExtraPart);
-			var mapGenerator = new SimpleMapGenerator();
-			var map = mapGenerator.Generate();
-			var painter = new ConsoleMapPainter();
-			painter.Paint(map);
-			//Console.WriteLine("Press ESC to stop");
+
+			var gameEngine = new GameEngine(new SimpleMapGenerator(), new ConsoleMapPainter(), new CollisionDetector());
+			
 			ConsoleKeyInfo keyInfo;
 			do
 			{
@@ -24,16 +23,16 @@ namespace BattleCity.App
 				switch (keyInfo.Key)
 				{
 					case ConsoleKey.UpArrow:
-						Console.WriteLine("Up");
+						gameEngine.MoveTankB(Direction.Up);
 						break;
 					case ConsoleKey.RightArrow:
-						Console.WriteLine("Right");
+						gameEngine.MoveTankB(Direction.Right);
 						break;
 					case ConsoleKey.DownArrow:
-						Console.WriteLine("Down");
+						gameEngine.MoveTankB(Direction.Down);
 						break;
 					case ConsoleKey.LeftArrow:
-						Console.WriteLine("Left");
+						gameEngine.MoveTankB(Direction.Left);
 						break;
 				}
 			} 

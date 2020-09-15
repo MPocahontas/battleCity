@@ -4,6 +4,6 @@ namespace BattleCity.Core.Services.Abstractions
 {
 	public interface ICollisionDetector
 	{
-		bool IsCollisionDetected(Tank tank, Map map);
+		bool IsDetected(Tank tank, Map map);
 	}
 }
