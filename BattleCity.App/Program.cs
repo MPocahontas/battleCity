@@ -34,6 +34,24 @@ namespace BattleCity.App
 					case ConsoleKey.LeftArrow:
 						gameEngine.MoveTankB(Direction.Left);
 						break;
+					case ConsoleKey.Enter:
+						gameEngine.ShootTankB();
+						break;
+					case ConsoleKey.W:
+						gameEngine.MoveTankA(Direction.Up);
+						break;
+					case ConsoleKey.D:
+						gameEngine.MoveTankA(Direction.Right);
+						break;
+					case ConsoleKey.S:
+						gameEngine.MoveTankA(Direction.Down);
+						break;
+					case ConsoleKey.A:
+						gameEngine.MoveTankA(Direction.Left);
+						break;
+					case ConsoleKey.Spacebar:
+						gameEngine.ShootTankA();
+						break;
 				}
 			} 
 			while (keyInfo.Key != ConsoleKey.Escape);
