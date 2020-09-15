@@ -10,6 +10,8 @@ namespace BattleCity.App
 {
 	public class ConsoleMapPainter : IMapPainter
 	{
+		private static Object _locker = new object();
+
 		public void Paint(Map map)
 		{
 			Console.Clear();
@@ -38,16 +40,22 @@ namespace BattleCity.App
 
 		public void Redraw(Bullet bullet)
 		{
-			Clear(bullet.GetOldRectangle());
-			Paint(bullet, ConsoleColor.Gray);
-			Console.SetCursorPosition(0, Constants.MapHeight);
+			lock (_locker)
+			{
+				Clear(bullet.GetOldRectangle());
+				Paint(bullet, ConsoleColor.Gray);
+				Console.SetCursorPosition(0, Constants.MapHeight);
+			}
 		}
 
 		public void Redraw(Tank tank, Map map)
 		{
-			Clear(tank.GetOldRectangle());
-			Paint(tank, tank.Equals(map.TankA) ? ConsoleColor.Red : ConsoleColor.DarkBlue);
-			Console.SetCursorPosition(0, Constants.MapHeight);
+			lock (_locker)
+			{
+				Clear(tank.GetOldRectangle());
+				Paint(tank, tank.Equals(map.TankA) ? ConsoleColor.Red : ConsoleColor.DarkBlue);
+				Console.SetCursorPosition(0, Constants.MapHeight);
+			}
 		}
 
 		public void Clear(Rectangle rectangle)
