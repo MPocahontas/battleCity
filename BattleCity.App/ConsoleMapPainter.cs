@@ -1,5 +1,6 @@
 ﻿using System;
 using BattleCity.Core;
+using BattleCity.Core.Enums;
 using BattleCity.Core.Models;
 using BattleCity.Core.Models.Base;
 using BattleCity.Core.Services.Abstractions;
@@ -11,11 +12,11 @@ namespace BattleCity.App
 		public void Paint(Map map)
 		{
 			Console.Clear();
-			PaintBorder();
+			PaintBorders();
 
 			foreach (var brickWall in map.BrickWalls)
 			{
-				Paint(brickWall, ConsoleColor.Red);
+				Paint(brickWall, ConsoleColor.DarkRed);
 			}
 
 			foreach (var concreteWall in map.ConcreteWalls)
@@ -30,11 +31,43 @@ namespace BattleCity.App
 
 			Paint(map.TankA, ConsoleColor.Red);
 			Paint(map.TankB, ConsoleColor.DarkBlue);
-
+			
 			Console.SetCursorPosition(0, Constants.MapHeight);
 		}
 
-		private void PaintBorder()
+		private void Paint(Tank tank, ConsoleColor color)
+		{
+			Paint((BaseMapObject)tank, color);
+			Console.ForegroundColor = color;
+			var centeredX = tank.X + Tank.Width / 2;
+			var centeredY = tank.Y + Tank.Height / 2;
+			Console.SetCursorPosition(centeredX, centeredY);
+			Console.Write("[]");
+
+			switch (tank.GunDirection)
+			{
+				case Direction.Up:
+					Console.SetCursorPosition(centeredX, centeredY - 1);
+					Console.Write("|");
+					break;
+				case Direction.Right:
+					Console.SetCursorPosition(centeredX + 2, centeredY);
+					Console.Write("-");
+					break;
+				case Direction.Down:
+					Console.SetCursorPosition(centeredX, centeredY + 1);
+					Console.Write("|");
+					break;
+				case Direction.Left:
+					Console.SetCursorPosition(centeredX - 1, centeredY);
+					Console.Write("-");
+					break;
+			}
+
+			Console.ResetColor();
+		}
+
+		private void PaintBorders()
 		{
 			for (int i = 0; i < Constants.MapWidth; i++)
 			{

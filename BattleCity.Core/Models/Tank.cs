@@ -11,7 +11,7 @@ namespace BattleCity.Core.Models
 		private const int XSpeed = 2;
 		private const int YSpeed = 1;
 
-		private Direction _gunDirection;
+		public Direction GunDirection { get; private set; }
 		private int _oldX;
 		private int _oldY;
 
@@ -19,7 +19,7 @@ namespace BattleCity.Core.Models
 		{
 			_oldX = x;
 			_oldY = y;
-			_gunDirection = gunDirection;
+			GunDirection = gunDirection;
 		}
 
 		public void Move(Direction direction)
@@ -27,7 +27,7 @@ namespace BattleCity.Core.Models
 			_oldX = X;
 			_oldY = Y;
 
-			_gunDirection = direction;
+			GunDirection = direction;
 
 			switch (direction)
 			{

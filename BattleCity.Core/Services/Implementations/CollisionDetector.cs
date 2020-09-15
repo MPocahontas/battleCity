@@ -13,6 +13,24 @@ namespace BattleCity.Core.Services.Implementations
 			if (tank.Y < 0 || tank.Y + Tank.Height >= Constants.MapHeight)
 				return true;
 
+			foreach (var brickWall in map.BrickWalls)
+			{
+				if (tank.GetRectangle().IntersectsWith(brickWall.GetRectangle()))
+					return true;
+			}
+
+			foreach (var concreteWall in map.ConcreteWalls)
+			{
+				if (tank.GetRectangle().IntersectsWith(concreteWall.GetRectangle()))
+					return true;
+			}
+
+			foreach (var river in map.Rivers)
+			{
+				if (tank.GetRectangle().IntersectsWith(river.GetRectangle()))
+					return true;
+			}
+
 			return false;
 		}
 	}

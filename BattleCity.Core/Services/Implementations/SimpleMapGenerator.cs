@@ -10,8 +10,8 @@ namespace BattleCity.Core.Services.Implementations
 		{
 			return new Map(
 				new List<BrickWall> {new BrickWall(1, 1)},
-				new List<ConcreteWall> {new ConcreteWall(2, 2)},
-				new List<River> { new River(5, 5)});
+				new List<ConcreteWall> {new ConcreteWall(11, 11)},
+				new List<River> { new River(21, 21)});
 		}
 	}
 }
