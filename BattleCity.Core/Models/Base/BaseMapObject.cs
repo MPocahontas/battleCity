@@ -2,7 +2,7 @@
 
 namespace BattleCity.Core.Models.Base
 {
-	public abstract class BaseMapObject
+	public abstract class BaseMapObject : IDrawable
 	{
 		private readonly int _width;
 		private readonly int _height;

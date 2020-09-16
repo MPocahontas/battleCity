@@ -1,4 +1,4 @@
 ﻿namespace BattleCity.Core.Models.Base
 {
-	public interface IBonus { }
+	public interface IBonus : IDrawable { }
 }

@@ -74,6 +74,11 @@ namespace BattleCity.Core.Services.Implementations
 			}
 			else
 			{
+				var bonuses = _map.Bonuses.Where(_ => _.GetRectangle().IntersectsWith(tank.GetRectangle()));
+				foreach (var bonus in bonuses)
+				{
+					
+				}
 				_painter.Redraw(tank, _map);
 			}
 		}
