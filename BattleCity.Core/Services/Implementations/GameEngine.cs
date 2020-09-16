@@ -77,8 +77,9 @@ namespace BattleCity.Core.Services.Implementations
 				var bonuses = _map.Bonuses.Where(_ => _.GetRectangle().IntersectsWith(tank.GetRectangle()));
 				foreach (var bonus in bonuses)
 				{
-					
+					tank.Apply(bonus);
 				}
+
 				_painter.Redraw(tank, _map);
 			}
 		}
