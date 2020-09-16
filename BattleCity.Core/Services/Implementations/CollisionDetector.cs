@@ -66,7 +66,7 @@ namespace BattleCity.Core.Services.Implementations
 				x = new Random().Next(0, Constants.MapWidth - width);
 				y = new Random().Next(0, Constants.MapHeight - height);
 			} 
-			while (IsRectangleOnFreeSpace(new Rectangle(x, y, width, height), map));
+			while (!IsRectangleOnFreeSpace(new Rectangle(x, y, width, height), map));
 
 			return new Point(x, y);
 		}

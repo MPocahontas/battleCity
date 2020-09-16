@@ -25,7 +25,7 @@ namespace BattleCity.Core.Models
 
 		public Direction GunDirection { get; private set; }
 
-		public int Speed => _isSpeedIncreased
+		public int BulletSpeed => _isSpeedIncreased
 			? Constants.DefaultBulletSpeed * SpeedMultiplier 
 			: Constants.DefaultBulletSpeed;
 

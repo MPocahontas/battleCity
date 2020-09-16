@@ -4,13 +4,14 @@ using BattleCity.Core;
 using BattleCity.Core.Enums;
 using BattleCity.Core.Models;
 using BattleCity.Core.Models.Base;
+using BattleCity.Core.Models.Bonuses;
 using BattleCity.Core.Services.Abstractions;
 
 namespace BattleCity.App
 {
 	public class ConsoleMapPainter : IMapPainter
 	{
-		private static readonly Object _locker = new object();
+		private static readonly Object Locker = new object();
 
 		public void Draw(Map map)
 		{
@@ -38,11 +39,22 @@ namespace BattleCity.App
 			Console.SetCursorPosition(0, Constants.MapHeight);
 		}
 
+		public void Draw(IBonus bonus)
+		{
+			lock (Locker)
+			{
+				if (bonus is ArmorBonus)
+					Paint(bonus, ConsoleColor.DarkCyan);
+				else if (bonus is AttackBonus)
+					Paint(bonus, ConsoleColor.DarkGray);
+			}
+		}
+
 		public void Redraw(Bullet bullet)
 		{
-			lock (_locker)
+			lock (Locker)
 			{
-				Clear(bullet.GetOldRectangle());
+				ClearUnsafe(bullet.GetOldRectangle());
 				Paint(bullet, ConsoleColor.Gray);
 				Console.SetCursorPosition(0, Constants.MapHeight);
 			}
@@ -50,15 +62,23 @@ namespace BattleCity.App
 
 		public void Redraw(Tank tank, Map map)
 		{
-			lock (_locker)
+			lock (Locker)
 			{
-				Clear(tank.GetOldRectangle());
+				ClearUnsafe(tank.GetOldRectangle());
 				Paint(tank, tank.Equals(map.TankA) ? ConsoleColor.Red : ConsoleColor.DarkBlue);
 				Console.SetCursorPosition(0, Constants.MapHeight);
 			}
 		}
 
 		public void Clear(Rectangle rectangle)
+		{
+			lock (Locker)
+			{
+				ClearUnsafe(rectangle);
+			}
+		}
+
+		public void ClearUnsafe(Rectangle rectangle)
 		{
 			for (int i = rectangle.Left; i <= rectangle.Right; i++)
 			{
@@ -119,7 +139,7 @@ namespace BattleCity.App
 			}
 		}
 
-		private void Paint(BaseMapObject src, ConsoleColor color)
+		private void Paint(IDrawable src, ConsoleColor color)
 		{
 			var rectangle = src.GetRectangle();
 

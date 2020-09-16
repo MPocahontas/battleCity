@@ -27,7 +27,7 @@ namespace BattleCity.Core.Services.Implementations
 			_map.RespawnTankA();
 			_map.RespawnTankB();
 			_painter.Draw(_map);
-			_bonusGeneratorTimer = new Timer(GenerateBonusCallback, null, new Random().Next(), Timeout.Infinite );
+			_bonusGeneratorTimer = new Timer(GenerateBonusCallback, null, GetNextBonusGenerateTime(), Timeout.Infinite );
 		}
 
 		public void MoveTankA(Direction direction)
@@ -48,7 +48,8 @@ namespace BattleCity.Core.Services.Implementations
 
 		public void ShootTankB()
 		{
-
+			var bullet = CreateBullet(_map.TankB);
+			Task.Run(() => MoveBullet(bullet));
 		}
 
 		private Bullet CreateBullet(Tank tank)
@@ -56,13 +57,13 @@ namespace BattleCity.Core.Services.Implementations
 			switch (tank.GunDirection)
 			{
 				case Direction.Up:
-					return new Bullet(_map.TankA.X + Tank.Width / 2, _map.TankA.Y, _map.TankA.GunDirection, Constants.DefaultBulletSpeed);
+					return new Bullet(tank.X + Tank.Width / 2, tank.Y - 2, tank.GunDirection, tank.BulletSpeed);
 				case Direction.Right:
-					return new Bullet(_map.TankA.X + Tank.Width, _map.TankA.Y + Tank.Width / 2, _map.TankA.GunDirection, Constants.DefaultBulletSpeed);
+					return new Bullet(tank.X + Tank.Width + 1, tank.Y + Tank.Width / 2, tank.GunDirection, tank.BulletSpeed);
 				case Direction.Down:
-					return new Bullet(_map.TankA.X + Tank.Width / 2, _map.TankA.Y + Tank.Height, _map.TankA.GunDirection, Constants.DefaultBulletSpeed);
+					return new Bullet(tank.X + Tank.Width / 2, tank.Y + Tank.Height + 1, tank.GunDirection, tank.BulletSpeed);
 				case Direction.Left:
-					return new Bullet(_map.TankA.X, _map.TankA.Y + Tank.Height / 2, _map.TankA.GunDirection, Constants.DefaultBulletSpeed);
+					return new Bullet(tank.X - 2, tank.Y + Tank.Height / 2, tank.GunDirection, tank.BulletSpeed);
 				default:
 					throw new ArgumentOutOfRangeException($"Invalid value {tank.GunDirection} for enum {nameof(Direction)}");
 			}
@@ -81,6 +82,7 @@ namespace BattleCity.Core.Services.Implementations
 				foreach (var bonus in bonuses)
 				{
 					tank.Apply(bonus);
+					_painter.Clear(bonus.GetRectangle());
 				}
 
 				_painter.Redraw(tank, _map);
@@ -118,16 +120,20 @@ namespace BattleCity.Core.Services.Implementations
 				{
 					var freeSpacePoint =
 						_collisionDetector.GetFreeSpacePoint(ArmorBonus.Width, ArmorBonus.Height, _map);
-					_map.Add(new ArmorBonus(freeSpacePoint.X, freeSpacePoint.Y));
+					var bonus = new ArmorBonus(freeSpacePoint.X, freeSpacePoint.Y);
+					_map.Add(bonus);
+					_painter.Draw(bonus);
 				}
 				else
 				{
 					var freeSpacePoint =
 						_collisionDetector.GetFreeSpacePoint(AttackBonus.Width, AttackBonus.Height, _map);
-					_map.Add(new AttackBonus(freeSpacePoint.X, freeSpacePoint.Y));
+					var bonus = new AttackBonus(freeSpacePoint.X, freeSpacePoint.Y);
+					_map.Add(bonus);
+					_painter.Draw(bonus);
 				}
 			}
-			finally
+			finally 
 			{
 				_bonusGeneratorTimer.Change(GetNextBonusGenerateTime(), Timeout.Infinite);
 			}
@@ -135,8 +141,8 @@ namespace BattleCity.Core.Services.Implementations
 
 		private int GetNextBonusGenerateTime() 
 			=> new Random().Next(
-				Constants.MinimumNextBonusGenerateTimeInSeconds,
-				Constants.MinimumNextBonusGenerateTimeInSeconds + Constants.NextBonusGenerateTimeDeltaInSeconds);
+				Constants.MinimumNextBonusGenerateTimeInSeconds * 1000,
+				(Constants.MinimumNextBonusGenerateTimeInSeconds + Constants.NextBonusGenerateTimeDeltaInSeconds) * 1000);
 
 		public void Dispose()
 		{

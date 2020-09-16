@@ -42,6 +42,7 @@ namespace BattleCity.Core.Models
 			ConcreteWalls = concreteWalls;
 			Rivers = rivers;
 			Bullets = new List<Bullet>();
+			Bonuses = new List<IBonus>();
 
 			FlagA = flagA;
 			FlagB = flagB;
