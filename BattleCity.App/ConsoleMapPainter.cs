@@ -15,38 +15,50 @@ namespace BattleCity.App
 
 		public void Draw(Map map)
 		{
-			Console.Clear();
-			PaintBorders();
-
-			foreach (var brickWall in map.BrickWalls)
+			lock (Locker)
 			{
-				Paint(brickWall, ConsoleColor.DarkRed);
-			}
+				Console.Clear();
+				DrawBorders();
 
-			foreach (var concreteWall in map.ConcreteWalls)
-			{
-				Paint(concreteWall, ConsoleColor.White);
-			}
+				foreach (var brickWall in map.BrickWalls)
+				{
+					Draw(brickWall, ConsoleColor.DarkRed);
+				}
 
-			foreach (var river in map.Rivers)
-			{
-				Paint(river, ConsoleColor.Blue);
-			}
+				foreach (var concreteWall in map.ConcreteWalls)
+				{
+					Draw(concreteWall, ConsoleColor.White);
+				}
 
-			Paint(map.TankA, ConsoleColor.Red);
-			Paint(map.TankB, ConsoleColor.DarkBlue);
-			
-			Console.SetCursorPosition(0, Constants.MapHeight);
+				foreach (var river in map.Rivers)
+				{
+					Draw(river, ConsoleColor.Blue);
+				}
+
+				foreach (var bullet in map.Bullets)
+				{
+					Draw(bullet, ConsoleColor.Gray);
+				}
+
+				foreach (var bonus in map.Bonuses)
+				{
+					DrawUnsafe(bonus);
+				}
+
+				Draw(map.FlagA, ConsoleColor.Red);
+				Draw(map.TankA, ConsoleColor.Red);
+				Draw(map.FlagB, ConsoleColor.DarkBlue);
+				Draw(map.TankB, ConsoleColor.DarkBlue);
+
+				Console.SetCursorPosition(0, Constants.MapHeight);
+			}
 		}
 
 		public void Draw(IBonus bonus)
 		{
 			lock (Locker)
 			{
-				if (bonus is ArmorBonus)
-					Paint(bonus, ConsoleColor.DarkCyan);
-				else if (bonus is AttackBonus)
-					Paint(bonus, ConsoleColor.DarkGray);
+				DrawUnsafe(bonus);
 			}
 		}
 
@@ -55,17 +67,27 @@ namespace BattleCity.App
 			lock (Locker)
 			{
 				ClearUnsafe(bullet.GetOldRectangle());
-				Paint(bullet, ConsoleColor.Gray);
+				Draw(bullet, ConsoleColor.Gray);
 				Console.SetCursorPosition(0, Constants.MapHeight);
 			}
 		}
 
-		public void Redraw(Tank tank, Map map)
+		public void RedrawTankA(Tank tank)
 		{
 			lock (Locker)
 			{
 				ClearUnsafe(tank.GetOldRectangle());
-				Paint(tank, tank.Equals(map.TankA) ? ConsoleColor.Red : ConsoleColor.DarkBlue);
+				Draw(tank, ConsoleColor.Red);
+				Console.SetCursorPosition(0, Constants.MapHeight);
+			}
+		}
+
+		public void RedrawTankB(Tank tank)
+		{
+			lock (Locker)
+			{
+				ClearUnsafe(tank.GetOldRectangle());
+				Draw(tank, ConsoleColor.DarkBlue);
 				Console.SetCursorPosition(0, Constants.MapHeight);
 			}
 		}
@@ -75,10 +97,11 @@ namespace BattleCity.App
 			lock (Locker)
 			{
 				ClearUnsafe(rectangle);
+				Console.SetCursorPosition(0, Constants.MapHeight);
 			}
 		}
 
-		public void ClearUnsafe(Rectangle rectangle)
+		private void ClearUnsafe(Rectangle rectangle)
 		{
 			for (int i = rectangle.Left; i <= rectangle.Right; i++)
 			{
@@ -92,9 +115,17 @@ namespace BattleCity.App
 			Console.SetCursorPosition(0, Constants.MapHeight);
 		}
 
-		private void Paint(Tank tank, ConsoleColor color)
+		private void DrawUnsafe(IBonus bonus)
 		{
-			Paint((BaseMapObject)tank, color);
+			if (bonus is ArmorBonus)
+				Draw(bonus, ConsoleColor.DarkCyan);
+			else if (bonus is AttackBonus)
+				Draw(bonus, ConsoleColor.DarkGray);
+		}
+
+		private void Draw(Tank tank, ConsoleColor color)
+		{
+			Draw((BaseMapObject)tank, color);
 			Console.ForegroundColor = color;
 			var centeredX = tank.X + Tank.Width / 2;
 			var centeredY = tank.Y + Tank.Height / 2;
@@ -124,7 +155,7 @@ namespace BattleCity.App
 			Console.ResetColor();
 		}
 
-		private void PaintBorders()
+		private void DrawBorders()
 		{
 			for (int i = 0; i < Constants.MapWidth; i++)
 			{
@@ -139,7 +170,7 @@ namespace BattleCity.App
 			}
 		}
 
-		private void Paint(IDrawable src, ConsoleColor color)
+		private void Draw(IDrawable src, ConsoleColor color)
 		{
 			var rectangle = src.GetRectangle();
 

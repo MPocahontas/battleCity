@@ -73,10 +73,10 @@ namespace BattleCity.Core.Services.Implementations
 
 		private bool IsRectangleOnFreeSpace(Rectangle rectangle, Map map)
 		{
-			if (map.TankA.GetRectangle().IntersectsWith(rectangle))
+			if (map.TankA != null && map.TankA.GetRectangle().IntersectsWith(rectangle))
 				return false;
 
-			if (map.TankB.GetRectangle().IntersectsWith(rectangle))
+			if (map.TankB != null && map.TankB.GetRectangle().IntersectsWith(rectangle))
 				return false;
 
 			if (map.FlagA.GetRectangle().IntersectsWith(rectangle))

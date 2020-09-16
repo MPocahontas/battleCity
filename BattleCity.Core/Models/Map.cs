@@ -75,11 +75,6 @@ namespace BattleCity.Core.Models
 			Bullets.Remove(bullet);
 		}
 
-		public void RespawnTankA()
-		{
-			TankA = new Tank(_respawnA.X, _respawnA.Y, Direction.Right);
-		}
-
 		public void KillTankA()
 		{
 			TankA = null;
@@ -88,6 +83,11 @@ namespace BattleCity.Core.Models
 		public void KillTankB()
 		{
 			TankA = null;
+		}
+
+		public void RespawnTankA()
+		{
+			TankA = new Tank(_respawnA.X, _respawnA.Y, Direction.Right);
 		}
 
 		public void RespawnTankB()

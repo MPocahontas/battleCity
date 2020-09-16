@@ -11,6 +11,8 @@ namespace BattleCity.Core.Services.Implementations
 {
 	public class GameEngine : IDisposable
 	{
+		private static readonly object BulletLocker = new object();
+
 		private readonly IMapPainter _painter;
 		private readonly ICollisionDetector _collisionDetector;
 		private readonly Map _map;
@@ -32,23 +34,31 @@ namespace BattleCity.Core.Services.Implementations
 
 		public void MoveTankA(Direction direction)
 		{
-			MoveTank(_map.TankA, direction);
+			if (_map.TankA != null)
+			{
+				MoveTank(_map.TankA, direction, _painter.RedrawTankA);
+			}
 		}
 
 		public void ShootTankA()
 		{
 			var bullet = CreateBullet(_map.TankA);
+			_map.Add(bullet);
 			Task.Run(() => MoveBullet(bullet));
 		}
 
 		public void MoveTankB(Direction direction)
 		{
-			MoveTank(_map.TankB, direction);
+			if (_map.TankB != null)
+			{
+				MoveTank(_map.TankB, direction, _painter.RedrawTankB);
+			}
 		}
 
 		public void ShootTankB()
 		{
 			var bullet = CreateBullet(_map.TankB);
+			_map.Add(bullet);
 			Task.Run(() => MoveBullet(bullet));
 		}
 
@@ -69,7 +79,7 @@ namespace BattleCity.Core.Services.Implementations
 			}
 		}
 
-		private void MoveTank(Tank tank, Direction direction)
+		private void MoveTank(Tank tank, Direction direction, Action<Tank> redrawDelegate)
 		{
 			tank.Move(direction);
 			if (_collisionDetector.IsDetected(tank, _map))
@@ -85,7 +95,7 @@ namespace BattleCity.Core.Services.Implementations
 					_painter.Clear(bonus.GetRectangle());
 				}
 
-				_painter.Redraw(tank, _map);
+				redrawDelegate(tank);
 			}
 		}
 
@@ -96,13 +106,93 @@ namespace BattleCity.Core.Services.Implementations
 				bullet.Move();
 				if (_collisionDetector.IsOutOfTheMap(bullet, Bullet.Width, Bullet.Height))
 				{
+					_map.Remove(bullet);
 					_painter.Clear(bullet.GetOldRectangle());
+					break;
+				}
+
+				var brickWall = _map.BrickWalls.FirstOrDefault(_ => _.GetRectangle().IntersectsWith(bullet.GetRectangle()));
+				if (brickWall != null)
+				{
+					_map.Remove(bullet);
+					_map.Remove(brickWall);
+					_painter.Clear(bullet.GetOldRectangle());
+					_painter.Clear(brickWall.GetRectangle());
 					break;
 				}
 
 				if (_map.ConcreteWalls.Any(_ => _.GetRectangle().IntersectsWith(bullet.GetRectangle())))
 				{
+					_map.Remove(bullet);
 					_painter.Clear(bullet.GetOldRectangle());
+					break;
+				}
+
+				lock (BulletLocker)
+				{
+					var otherBullet = _map.Bullets.FirstOrDefault(_ => _.GetRectangle().IntersectsWith(bullet.GetRectangle()) && !_.Equals(bullet));
+					if (otherBullet != null)
+					{
+						_map.Remove(bullet);
+						_map.Remove(otherBullet);
+						_painter.Clear(bullet.GetOldRectangle());
+						_painter.Clear(otherBullet.GetRectangle());
+						break;
+					}
+				}
+
+				if (_map.TankA != null && bullet.GetRectangle().IntersectsWith(_map.TankA.GetRectangle()))
+				{
+					_map.TankA.Hit();
+					if (!_map.TankA.IsAlive)
+					{
+						_map.KillTankA();
+						_painter.Clear(_map.TankA.GetRectangle());
+						Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(t =>
+						{
+							_map.RespawnTankA();
+							_painter.RedrawTankA(_map.TankA);
+						});
+					}
+
+					_map.Remove(bullet);
+					_painter.Clear(bullet.GetRectangle());
+					break;
+				}
+
+				if (_map.TankB != null && bullet.GetRectangle().IntersectsWith(_map.TankB.GetRectangle()))
+				{
+					_map.TankB.Hit();
+					if (!_map.TankB.IsAlive)
+					{
+						_map.KillTankB();
+						_painter.Clear(_map.TankB.GetRectangle());
+						Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(t =>
+						{
+							_map.RespawnTankB();
+							_painter.RedrawTankB(_map.TankB);
+						});
+					}
+
+					_map.Remove(bullet);
+					_painter.Clear(bullet.GetRectangle());
+					break;
+				}
+
+				if (bullet.GetRectangle().IntersectsWith(_map.FlagA.GetRectangle()))
+				{
+					// game over
+					break;
+				}
+
+				if (bullet.GetRectangle().IntersectsWith(_map.FlagB.GetRectangle()))
+				{
+					// game over
+					break;
+				}
+
+				if (!_map.Bullets.Any(_ => _.Equals(bullet)))
+				{
 					break;
 				}
 

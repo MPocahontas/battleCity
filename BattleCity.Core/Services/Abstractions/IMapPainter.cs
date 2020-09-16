@@ -12,7 +12,9 @@ namespace BattleCity.Core.Services.Abstractions
 
 		void Redraw(Bullet bullet);
 
-		void Redraw(Tank tank, Map map);
+		void RedrawTankA(Tank tank);
+
+		void RedrawTankB(Tank tank);
 
 		void Clear(Rectangle rectangle);
 	}
