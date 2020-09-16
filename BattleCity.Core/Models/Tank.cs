@@ -12,6 +12,7 @@ namespace BattleCity.Core.Models
 	{
 		private const int SpeedMultiplier = 2;
 		private const int AttackBonusDurationInSeconds = 10;
+		private const int InvulnerabilityDurationInSeconds = 3;
 		public const int Height = 5;
 		public const int Width = 5;
 
@@ -27,6 +28,7 @@ namespace BattleCity.Core.Models
 		public int Speed => _isSpeedIncreased
 			? Constants.DefaultBulletSpeed * SpeedMultiplier 
 			: Constants.DefaultBulletSpeed;
+
 		private int _oldX;
 		private int _oldY;
 		private bool _isArmored;
@@ -37,6 +39,9 @@ namespace BattleCity.Core.Models
 			_oldX = x;
 			_oldY = y;
 			GunDirection = gunDirection;
+			IsInvulnerable = true;
+			Task.Delay(InvulnerabilityDurationInSeconds)
+				.ContinueWith(t => IsInvulnerable = false);
 		}
 
 		public void Move(Direction direction)
@@ -79,6 +84,8 @@ namespace BattleCity.Core.Models
 			else if (bonus is AttackBonus)
 			{
 				_isSpeedIncreased = true;
+				Task.Delay(TimeSpan.FromSeconds(AttackBonusDurationInSeconds))
+					.ContinueWith(t => DecreaseSpeed());
 				Task.Run(DecreaseSpeed);
 			}
 		}
@@ -99,7 +106,6 @@ namespace BattleCity.Core.Models
 
 		public void DecreaseSpeed()
 		{
-			Thread.Sleep(TimeSpan.FromSeconds(AttackBonusDurationInSeconds));
 			_isSpeedIncreased = false;
 		}
 	}
