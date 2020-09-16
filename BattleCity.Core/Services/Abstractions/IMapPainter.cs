@@ -5,7 +5,7 @@ namespace BattleCity.Core.Services.Abstractions
 {
 	public interface IMapPainter
 	{
-		void Paint(Map map);
+		void Draw(Map map);
 
 		void Redraw(Bullet bullet);
 

@@ -5,7 +5,7 @@ using BattleCity.Core.Models.Base;
 
 namespace BattleCity.Core.Models
 {
-	public class Bullet : BaseMapObject
+	public class Bullet : BaseMapObject, IRedrawable
 	{
 		public const int Width = 1;
 		public const int Height = 1;

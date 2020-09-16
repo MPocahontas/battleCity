@@ -4,7 +4,7 @@ using BattleCity.Core.Models.Base;
 
 namespace BattleCity.Core.Models
 {
-	public class Tank : BaseMapObject
+	public class Tank : BaseMapObject, IRedrawable
 	{
 		public const int Height = 5;
 		public const int Width = 5;

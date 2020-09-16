@@ -10,9 +10,9 @@ namespace BattleCity.App
 {
 	public class ConsoleMapPainter : IMapPainter
 	{
-		private static Object _locker = new object();
+		private static readonly Object _locker = new object();
 
-		public void Paint(Map map)
+		public void Draw(Map map)
 		{
 			Console.Clear();
 			PaintBorders();

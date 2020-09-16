@@ -22,7 +22,7 @@ namespace BattleCity.Core.Services.Implementations
 			_painter = painter;
 			_collisionDetector = collisionDetector;
 			_map = mapGenerator.Generate();
-			_painter.Paint(_map);
+			_painter.Draw(_map);
 		}
 
 		public void MoveTankA(Direction direction)
