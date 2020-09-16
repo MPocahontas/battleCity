@@ -22,6 +22,8 @@ namespace BattleCity.Core.Services.Implementations
 			_painter = painter;
 			_collisionDetector = collisionDetector;
 			_map = mapGenerator.Generate();
+			_map.RespawnTankA();
+			_map.RespawnTankB();
 			_painter.Draw(_map);
 		}
 
