@@ -1,4 +1,5 @@
-﻿using BattleCity.Core.Models;
+﻿using System.Drawing;
+using BattleCity.Core.Models;
 using BattleCity.Core.Models.Base;
 
 namespace BattleCity.Core.Services.Abstractions
@@ -8,5 +9,7 @@ namespace BattleCity.Core.Services.Abstractions
 		bool IsDetected(Tank tank, Map map);
 
 		bool IsOutOfTheMap(BaseMapObject src, int width, int height);
+
+		Point GetFreeSpacePoint(int width, int height, Map map);
 	}
 }

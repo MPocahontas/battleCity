@@ -4,15 +4,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using BattleCity.Core.Enums;
 using BattleCity.Core.Models;
+using BattleCity.Core.Models.Bonuses;
 using BattleCity.Core.Services.Abstractions;
 
 namespace BattleCity.Core.Services.Implementations
 {
-	public class GameEngine
+	public class GameEngine : IDisposable
 	{
 		private readonly IMapPainter _painter;
 		private readonly ICollisionDetector _collisionDetector;
 		private readonly Map _map;
+		private readonly Timer _bonusGeneratorTimer;
 
 		public GameEngine(
 			IMapGenerator mapGenerator,
@@ -25,6 +27,7 @@ namespace BattleCity.Core.Services.Implementations
 			_map.RespawnTankA();
 			_map.RespawnTankB();
 			_painter.Draw(_map);
+			_bonusGeneratorTimer = new Timer(GenerateBonusCallback, null, new Random().Next(), Timeout.Infinite );
 		}
 
 		public void MoveTankA(Direction direction)
@@ -107,5 +110,37 @@ namespace BattleCity.Core.Services.Implementations
 			}
 		}
 
+		private void GenerateBonusCallback(object state)
+		{
+			try
+			{
+				if (new Random().Next(0, 100) % 2 == 0)
+				{
+					var freeSpacePoint =
+						_collisionDetector.GetFreeSpacePoint(ArmorBonus.Width, ArmorBonus.Height, _map);
+					_map.Add(new ArmorBonus(freeSpacePoint.X, freeSpacePoint.Y));
+				}
+				else
+				{
+					var freeSpacePoint =
+						_collisionDetector.GetFreeSpacePoint(AttackBonus.Width, AttackBonus.Height, _map);
+					_map.Add(new AttackBonus(freeSpacePoint.X, freeSpacePoint.Y));
+				}
+			}
+			finally
+			{
+				_bonusGeneratorTimer.Change(GetNextBonusGenerateTime(), Timeout.Infinite);
+			}
+		}
+
+		private int GetNextBonusGenerateTime() 
+			=> new Random().Next(
+				Constants.MinimumNextBonusGenerateTimeInSeconds,
+				Constants.MinimumNextBonusGenerateTimeInSeconds + Constants.NextBonusGenerateTimeDeltaInSeconds);
+
+		public void Dispose()
+		{
+			_bonusGeneratorTimer?.Dispose();
+		}
 	}
 }

@@ -1,4 +1,7 @@
-﻿using BattleCity.Core.Models;
+﻿using System;
+using System.Drawing;
+using System.Linq;
+using BattleCity.Core.Models;
 using BattleCity.Core.Models.Base;
 using BattleCity.Core.Services.Abstractions;
 
@@ -52,6 +55,52 @@ namespace BattleCity.Core.Services.Implementations
 				return true;
 
 			return false;
+		}
+
+		public Point GetFreeSpacePoint(int width, int height, Map map)
+		{
+			int x;
+			int y;
+			do
+			{
+				x = new Random().Next(0, Constants.MapWidth - width);
+				y = new Random().Next(0, Constants.MapHeight - height);
+			} 
+			while (IsRectangleOnFreeSpace(new Rectangle(x, y, width, height), map));
+
+			return new Point(x, y);
+		}
+
+		private bool IsRectangleOnFreeSpace(Rectangle rectangle, Map map)
+		{
+			if (map.TankA.GetRectangle().IntersectsWith(rectangle))
+				return false;
+
+			if (map.TankB.GetRectangle().IntersectsWith(rectangle))
+				return false;
+
+			if (map.FlagA.GetRectangle().IntersectsWith(rectangle))
+				return false;
+
+			if (map.FlagB.GetRectangle().IntersectsWith(rectangle))
+				return false;
+
+			if (map.ConcreteWalls.Any(_ => _.GetRectangle().IntersectsWith(rectangle)))
+				return false;
+
+			if (map.BrickWalls.Any(_ => _.GetRectangle().IntersectsWith(rectangle)))
+				return false;
+
+			if (map.Rivers.Any(_ => _.GetRectangle().IntersectsWith(rectangle)))
+				return false;
+
+			if (map.Bonuses.Any(_ => _.GetRectangle().IntersectsWith(rectangle)))
+				return false;
+
+			if (map.Bullets.Any(_ => _.GetRectangle().IntersectsWith(rectangle)))
+				return false;
+
+			return true;
 		}
 	}
 }
