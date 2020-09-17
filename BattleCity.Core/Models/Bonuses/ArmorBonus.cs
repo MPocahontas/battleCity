@@ -2,6 +2,9 @@
 
 namespace BattleCity.Core.Models.Bonuses
 {
+	/// <summary>
+	/// Bonus that gives armor to a tank
+	/// </summary>
 	public class ArmorBonus : BaseMapObject, IBonus
 	{
 		public const int Width = 4;

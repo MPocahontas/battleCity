@@ -2,6 +2,9 @@
 
 namespace BattleCity.Core.Models.Base
 {
+	/// <summary>
+	/// Base class for all objects that can be drawn on the map
+	/// </summary>
 	public abstract class BaseMapObject : IDrawable
 	{
 		private readonly int _width;
@@ -19,7 +22,13 @@ namespace BattleCity.Core.Models.Base
 			_height = height;
 		}
 
+		/// <summary>
+		/// Returns rectangle that represents the object on the map
+		/// </summary>
 		public Rectangle GetRectangle() 
 			=> new Rectangle(X, Y, _width, _height);
+
+		public bool IntersectsWith(BaseMapObject obj)
+			=> obj != null && GetRectangle().IntersectsWith(obj.GetRectangle());
 	}
 }

@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Threading;
 using BattleCity.Core;
 using BattleCity.Core.Enums;
+using BattleCity.Core.Services.Abstractions;
 using BattleCity.Core.Services.Implementations;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BattleCity.App
 {
@@ -14,8 +15,22 @@ namespace BattleCity.App
 		{
 			Console.SetWindowSize(Constants.MapWidth + ConsoleExtraPart, Constants.MapHeight + ConsoleExtraPart);
 
-			var gameEngine = new GameEngine(new SimpleMapGenerator(), new ConsoleMapPainter(), new CollisionDetector());
-			
+			var serviceProvider = new ServiceCollection()
+				.AddSingleton<IMapGenerator, SimpleMapGenerator>()
+				.AddSingleton<IMapPainter, ConsoleMapPainter>()
+				.AddSingleton<IMapAnalyzer, MapAnalyzer>()
+				.AddSingleton<IActionResolver, ActionResolver>()
+				.AddSingleton<GameEngine>()
+				.BuildServiceProvider();
+
+			using (var gameEngine = serviceProvider.GetService<GameEngine>())
+			{
+				Run(gameEngine);
+			}
+		}
+
+		private static void Run(GameEngine gameEngine)
+		{
 			ConsoleKeyInfo keyInfo;
 			do
 			{
@@ -54,7 +69,7 @@ namespace BattleCity.App
 						gameEngine.ShootTankA();
 						break;
 				}
-			} 
+			}
 			while (keyInfo.Key != ConsoleKey.Escape);
 		}
 	}

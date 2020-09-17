@@ -22,22 +22,22 @@ namespace BattleCity.App
 
 				foreach (var brickWall in map.BrickWalls)
 				{
-					Draw(brickWall, ConsoleColor.DarkRed);
+					Draw(brickWall, Colors.BrickWall);
 				}
 
 				foreach (var concreteWall in map.ConcreteWalls)
 				{
-					Draw(concreteWall, ConsoleColor.White);
+					Draw(concreteWall, Colors.ConcreteWall);
 				}
 
 				foreach (var river in map.Rivers)
 				{
-					Draw(river, ConsoleColor.Blue);
+					Draw(river, Colors.River);
 				}
 
 				foreach (var bullet in map.Bullets)
 				{
-					Draw(bullet, ConsoleColor.Gray);
+					Draw(bullet, Colors.Bullet);
 				}
 
 				foreach (var bonus in map.Bonuses)
@@ -45,12 +45,12 @@ namespace BattleCity.App
 					DrawUnsafe(bonus);
 				}
 
-				Draw(map.FlagA, ConsoleColor.Red);
-				Draw(map.TankA, ConsoleColor.Red);
-				Draw(map.FlagB, ConsoleColor.DarkBlue);
-				Draw(map.TankB, ConsoleColor.DarkBlue);
+				Draw(map.FlagA, Colors.TeamA);
+				Draw(map.TankA, Colors.TeamA);
+				Draw(map.FlagB, Colors.TeamB);
+				Draw(map.TankB, Colors.TeamB);
 
-				Console.SetCursorPosition(0, Constants.MapHeight);
+				ResetCursor();
 			}
 		}
 
@@ -59,6 +59,16 @@ namespace BattleCity.App
 			lock (Locker)
 			{
 				DrawUnsafe(bonus);
+				ResetCursor();
+			}
+		}
+
+		public void Draw(Bullet bullet)
+		{
+			lock (Locker)
+			{
+				Draw(bullet, Colors.Bullet);
+				ResetCursor();
 			}
 		}
 
@@ -67,28 +77,18 @@ namespace BattleCity.App
 			lock (Locker)
 			{
 				ClearUnsafe(bullet.GetOldRectangle());
-				Draw(bullet, ConsoleColor.Gray);
-				Console.SetCursorPosition(0, Constants.MapHeight);
+				Draw(bullet, Colors.Bullet);
+				ResetCursor();
 			}
 		}
 
-		public void RedrawTankA(Tank tank)
+		public void Redraw(Tank tank)
 		{
 			lock (Locker)
 			{
 				ClearUnsafe(tank.GetOldRectangle());
-				Draw(tank, ConsoleColor.Red);
-				Console.SetCursorPosition(0, Constants.MapHeight);
-			}
-		}
-
-		public void RedrawTankB(Tank tank)
-		{
-			lock (Locker)
-			{
-				ClearUnsafe(tank.GetOldRectangle());
-				Draw(tank, ConsoleColor.DarkBlue);
-				Console.SetCursorPosition(0, Constants.MapHeight);
+				Draw(tank, tank.Team == Team.A ? Colors.TeamA : Colors.TeamB);
+				ResetCursor();
 			}
 		}
 
@@ -97,7 +97,16 @@ namespace BattleCity.App
 			lock (Locker)
 			{
 				ClearUnsafe(rectangle);
-				Console.SetCursorPosition(0, Constants.MapHeight);
+				ResetCursor();
+			}
+		}
+
+		public void DrawWinMessage(Team winner)
+		{
+			lock (Locker)
+			{
+				Console.Clear();
+				Console.WriteLine($"Team {winner} victory!");
 			}
 		}
 
@@ -111,16 +120,14 @@ namespace BattleCity.App
 					Console.Write(" ");
 				}
 			}
-
-			Console.SetCursorPosition(0, Constants.MapHeight);
 		}
 
 		private void DrawUnsafe(IBonus bonus)
 		{
 			if (bonus is ArmorBonus)
-				Draw(bonus, ConsoleColor.DarkCyan);
+				Draw(bonus, Colors.ArmorBonus);
 			else if (bonus is AttackBonus)
-				Draw(bonus, ConsoleColor.DarkGray);
+				Draw(bonus, Colors.AttackBonus);
 		}
 
 		private void Draw(Tank tank, ConsoleColor color)
@@ -202,5 +209,8 @@ namespace BattleCity.App
 
 			Console.ResetColor();
 		}
+
+		private void ResetCursor()
+			=> Console.SetCursorPosition(0, Constants.MapHeight);
 	}
 }

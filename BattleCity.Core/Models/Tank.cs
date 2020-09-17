@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Threading;
 using System.Threading.Tasks;
 using BattleCity.Core.Enums;
 using BattleCity.Core.Models.Base;
@@ -24,6 +23,8 @@ namespace BattleCity.Core.Models
 		public bool IsInvulnerable { private get; set; }
 
 		public Direction GunDirection { get; private set; }
+		
+		public Team Team { get; }
 
 		public int BulletSpeed => _isSpeedIncreased
 			? Constants.DefaultBulletSpeed * SpeedMultiplier 
@@ -34,18 +35,23 @@ namespace BattleCity.Core.Models
 		private bool _isArmored;
 		private bool _isSpeedIncreased;
 
-		public Tank(int x, int y, Direction gunDirection) : base(x, y, Width, Height)
+		public Tank(int x, int y, Direction gunDirection, Team team) : base(x, y, Width, Height)
 		{
 			_oldX = x;
 			_oldY = y;
 			GunDirection = gunDirection;
+			Team = team;
 			IsInvulnerable = true;
-			Task.Delay(InvulnerabilityDurationInSeconds)
+			IsAlive = true;
+
+			// after 3 second (InvulnerabilityDurationInSeconds) tank should stop being invulnerable
+			Task.Delay(TimeSpan.FromSeconds(InvulnerabilityDurationInSeconds))
 				.ContinueWith(t => IsInvulnerable = false);
 		}
 
 		public void Move(Direction direction)
 		{
+			// store old tank position in case of rollback need
 			_oldX = X;
 			_oldY = Y;
 
@@ -68,6 +74,9 @@ namespace BattleCity.Core.Models
 			}
 		}
 
+		/// <summary>
+		/// rollback state to previous map position
+		/// </summary>
 		public void RollbackState()
 		{
 			X = _oldX;
@@ -77,6 +86,10 @@ namespace BattleCity.Core.Models
 		public Rectangle GetOldRectangle() 
 			=> new Rectangle(_oldX, _oldY, Width, Height);
 
+		/// <summary>
+		/// Changes tank state depending on the bonus
+		/// </summary>
+		/// <param name="bonus"></param>
 		public void Apply(IBonus bonus)
 		{
 			if (bonus is ArmorBonus)
@@ -84,29 +97,31 @@ namespace BattleCity.Core.Models
 			else if (bonus is AttackBonus)
 			{
 				_isSpeedIncreased = true;
+
+				// after 10 seconds (AttackBonusDurationInSeconds) speed should become normal
 				Task.Delay(TimeSpan.FromSeconds(AttackBonusDurationInSeconds))
-					.ContinueWith(t => DecreaseSpeed());
-				Task.Run(DecreaseSpeed);
+					.ContinueWith(t => _isSpeedIncreased = false);
 			}
 		}
 
+		/// <summary>
+		/// Change tank state after colliding with a bullet
+		/// </summary>
 		public void Hit()
 		{
+			// if tank is invulnerable - do nothing
 			if (IsInvulnerable)
 				return;
 
+			// remove armor if any
 			if (_isArmored)
 			{
 				_isArmored = false;
 				return;
 			}
 
+			// kill tank in other cases
 			IsAlive = false;
-		}
-
-		public void DecreaseSpeed()
-		{
-			_isSpeedIncreased = false;
 		}
 	}
 }

@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
+using BattleCity.Core.Enums;
 using BattleCity.Core.Models;
 using BattleCity.Core.Models.Base;
 using BattleCity.Core.Services.Abstractions;
 
 namespace BattleCity.Core.Services.Implementations
 {
-	public class CollisionDetector : ICollisionDetector
+	/// <summary>
+	/// Class contains help methods for working with map
+	/// </summary>
+	public class MapAnalyzer : IMapAnalyzer
 	{
-		public bool IsDetected(Tank tank, Map map)
+		/// <summary>
+		/// Returns true if tank collised with any other object on map or left the map
+		/// </summary>
+		public bool IsCollisionDetected(Tank tank, Map map)
 		{
-			if (IsOutOfTheMap(tank, Tank.Width, Tank.Height))
+			if (IsOutOfTheMapBorders(tank, Tank.Width, Tank.Height))
 				return true;
 
 			foreach (var brickWall in map.BrickWalls)
@@ -32,21 +39,27 @@ namespace BattleCity.Core.Services.Implementations
 					return true;
 			}
 
-			if (tank.Equals(map.TankA))
+			if (tank.Team == Team.A && map.TankB != null)
 			{
-				if (tank.GetRectangle().IntersectsWith(map.TankB.GetRectangle()))
+				if (tank.IntersectsWith(map.TankB))
 					return true;
 			}
-			else
+
+			if (tank.Team == Team.B && map.TankA != null)
 			{
-				if (tank.GetRectangle().IntersectsWith(map.TankA.GetRectangle()))
+				if (tank.IntersectsWith(map.TankA))
 					return true;
 			}
 
 			return false;
 		}
 
-		public bool IsOutOfTheMap(BaseMapObject src, int width, int height)
+
+		/// <summary>
+		/// Returns true if object out of map borders
+		/// </summary>
+		/// <returns></returns>
+		public bool IsOutOfTheMapBorders(BaseMapObject src, int width, int height)
 		{
 			if (src.X < 0 || src.X + width >= Constants.MapWidth)
 				return true;
@@ -57,6 +70,13 @@ namespace BattleCity.Core.Services.Implementations
 			return false;
 		}
 
+
+		/// <summary>
+		/// Looking for a rectangle on the map that can be placed without collisions
+		/// </summary>
+		/// <param name="width">Width of required rectangle</param>
+		/// <param name="height">Heigh of required rectangle</param>
+		/// <returns>Left-Top rectangle point</returns>
 		public Point GetFreeSpacePoint(int width, int height, Map map)
 		{
 			int x;
