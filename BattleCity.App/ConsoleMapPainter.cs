@@ -22,22 +22,22 @@ namespace BattleCity.App
 
 				foreach (var brickWall in map.BrickWalls)
 				{
-					Draw(brickWall, ConsoleColor.DarkRed);
+					Draw(brickWall, Colors.BrickWall);
 				}
 
 				foreach (var concreteWall in map.ConcreteWalls)
 				{
-					Draw(concreteWall, ConsoleColor.White);
+					Draw(concreteWall, Colors.ConcreteWall);
 				}
 
 				foreach (var river in map.Rivers)
 				{
-					Draw(river, ConsoleColor.Blue);
+					Draw(river, Colors.River);
 				}
 
 				foreach (var bullet in map.Bullets)
 				{
-					Draw(bullet, ConsoleColor.Gray);
+					Draw(bullet, Colors.Bullet);
 				}
 
 				foreach (var bonus in map.Bonuses)
@@ -45,10 +45,10 @@ namespace BattleCity.App
 					DrawUnsafe(bonus);
 				}
 
-				Draw(map.FlagA, ConsoleColor.Red);
-				Draw(map.TankA, ConsoleColor.Red);
-				Draw(map.FlagB, ConsoleColor.DarkBlue);
-				Draw(map.TankB, ConsoleColor.DarkBlue);
+				Draw(map.FlagA, Colors.TeamA);
+				Draw(map.TankA, Colors.TeamA);
+				Draw(map.FlagB, Colors.TeamB);
+				Draw(map.TankB, Colors.TeamB);
 
 				Console.SetCursorPosition(0, Constants.MapHeight);
 			}
@@ -67,7 +67,7 @@ namespace BattleCity.App
 		{
 			lock (Locker)
 			{
-				Draw(bullet, ConsoleColor.Gray);
+				Draw(bullet, Colors.Bullet);
 				Console.SetCursorPosition(0, Constants.MapHeight);
 			}
 		}
@@ -77,7 +77,7 @@ namespace BattleCity.App
 			lock (Locker)
 			{
 				ClearUnsafe(bullet.GetOldRectangle());
-				Draw(bullet, ConsoleColor.Gray);
+				Draw(bullet, Colors.Bullet);
 				Console.SetCursorPosition(0, Constants.MapHeight);
 			}
 		}
@@ -87,7 +87,7 @@ namespace BattleCity.App
 			lock (Locker)
 			{
 				ClearUnsafe(tank.GetOldRectangle());
-				Draw(tank, tank.Team == Team.A ? ConsoleColor.Red : ConsoleColor.DarkBlue);
+				Draw(tank, tank.Team == Team.A ? Colors.TeamA : Colors.TeamB);
 				Console.SetCursorPosition(0, Constants.MapHeight);
 			}
 		}
@@ -127,9 +127,9 @@ namespace BattleCity.App
 		private void DrawUnsafe(IBonus bonus)
 		{
 			if (bonus is ArmorBonus)
-				Draw(bonus, ConsoleColor.DarkCyan);
+				Draw(bonus, Colors.ArmorBonus);
 			else if (bonus is AttackBonus)
-				Draw(bonus, ConsoleColor.DarkGray);
+				Draw(bonus, Colors.AttackBonus);
 		}
 
 		private void Draw(Tank tank, ConsoleColor color)
