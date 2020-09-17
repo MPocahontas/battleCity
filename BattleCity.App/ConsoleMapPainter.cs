@@ -101,6 +101,15 @@ namespace BattleCity.App
 			}
 		}
 
+		public void DrawWinMessage(Team winner)
+		{
+			lock (Locker)
+			{
+				Console.Clear();
+				Console.WriteLine($"Team {winner} victory!");
+			}
+		}
+
 		private void ClearUnsafe(Rectangle rectangle)
 		{
 			for (int i = rectangle.Left; i <= rectangle.Right; i++)

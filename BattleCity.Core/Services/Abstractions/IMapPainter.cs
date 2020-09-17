@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using BattleCity.Core.Enums;
 using BattleCity.Core.Models;
 using BattleCity.Core.Models.Base;
 
@@ -17,5 +18,7 @@ namespace BattleCity.Core.Services.Abstractions
 		void Redraw(Tank tank);
 
 		void Clear(Rectangle rectangle);
+
+		void DrawWinMessage(Team winner);
 	}
 }

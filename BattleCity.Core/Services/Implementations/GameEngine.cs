@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +20,8 @@ namespace BattleCity.Core.Services.Implementations
 		private readonly Map _map;
 		private readonly Timer _bonusGeneratorTimer;
 
+		private bool _isGameOver = false;
+
 		public GameEngine(
 			IMapGenerator mapGenerator,
 			IMapPainter painter,
@@ -34,13 +37,14 @@ namespace BattleCity.Core.Services.Implementations
 			_painter.Draw(_map);
 			_actionResolver.Initialize(_map);
 			_bonusGeneratorTimer = new Timer(GenerateBonusCallback, null, GetNextBonusGenerateTime(), Timeout.Infinite );
+
 		}
 
 		public void MoveTankA(Direction direction)
 		{
 			lock (MapLocker)
 			{
-				if (_map.TankA != null)
+				if (!_isGameOver && _map.TankA != null)
 				{
 					MoveTank(_map.TankA, direction);
 				}
@@ -51,9 +55,10 @@ namespace BattleCity.Core.Services.Implementations
 		{
 			lock (MapLocker)
 			{
-				var bullet = CreateBulletModel(_map.TankA);
-				_actionResolver.Add(bullet);
-				Task.Run(() => MoveBullet(bullet));
+				if (!_isGameOver)
+				{
+					Shoot(_map.TankA);
+				}
 			}
 		}
 
@@ -61,7 +66,7 @@ namespace BattleCity.Core.Services.Implementations
 		{
 			lock (MapLocker)
 			{
-				if (_map.TankB != null)
+				if (!_isGameOver && _map.TankB != null)
 				{
 					MoveTank(_map.TankB, direction);
 				}
@@ -72,10 +77,19 @@ namespace BattleCity.Core.Services.Implementations
 		{
 			lock (MapLocker)
 			{
-				var bullet = CreateBulletModel(_map.TankB);
-				_actionResolver.Add(bullet);
-				Task.Run(() => MoveBullet(bullet));
+				if (!_isGameOver)
+				{
+					Shoot(_map.TankB);
+				}
 			}
+		}
+
+		private void Shoot(Tank tank)
+		{
+			var bullet = CreateBulletModel(tank);
+			_actionResolver.Add(bullet);
+			var cancellationTokenSource = new CancellationTokenSource();
+			Task.Factory.StartNew(() => MoveBullet(bullet), cancellationTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 		}
 
 		private Bullet CreateBulletModel(Tank tank)
@@ -118,7 +132,7 @@ namespace BattleCity.Core.Services.Implementations
 			{
 				lock (MapLocker)
 				{
-					if (bullet == null)
+					if (_isGameOver)
 						break;
 
 					bullet.Move();
@@ -164,13 +178,17 @@ namespace BattleCity.Core.Services.Implementations
 
 					if (bullet.IntersectsWith(_map.FlagA))
 					{
-						// game over
+						_isGameOver = true;
+						_bonusGeneratorTimer.Dispose();
+						_painter.DrawWinMessage(Team.B);
 						break;
 					}
 
 					if (bullet.IntersectsWith(_map.FlagB))
 					{
-						// game over
+						_isGameOver = true;
+						_bonusGeneratorTimer.Dispose();
+						_painter.DrawWinMessage(Team.A);
 						break;
 					}
 
@@ -182,7 +200,7 @@ namespace BattleCity.Core.Services.Implementations
 					_painter.Redraw(bullet);
 				}
 
-				Thread.Sleep(8000 / bullet.Speed);
+				Thread.Sleep(Constants.BulletMoveDelay / bullet.Speed);
 			}
 		}
 
