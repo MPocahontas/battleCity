@@ -75,24 +75,20 @@ namespace BattleCity.Core.Models
 			Bullets.Remove(bullet);
 		}
 
-		public void KillTankA()
+		public void KillTank(Team team)
 		{
-			TankA = null;
+			if (team == Team.A)
+				TankA = null;
+			else if (team == Team.B) 
+				TankB = null;
 		}
 
-		public void KillTankB()
+		public void RespawnTank(Team team)
 		{
-			TankA = null;
-		}
-
-		public void RespawnTankA()
-		{
-			TankA = new Tank(_respawnA.X, _respawnA.Y, Direction.Right);
-		}
-
-		public void RespawnTankB()
-		{
-			TankB = new Tank(_respawnB.X, _respawnB.Y, Direction.Left);
+			if (team == Team.A)
+				TankA = new Tank(_respawnA.X, _respawnA.Y, Direction.Right);
+			else if (team == Team.B) 
+				TankB = new Tank(_respawnB.X, _respawnB.Y, Direction.Left);
 		}
 	}
 }

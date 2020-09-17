@@ -72,22 +72,12 @@ namespace BattleCity.App
 			}
 		}
 
-		public void RedrawTankA(Tank tank)
+		public void Redraw(Tank tank, Team team)
 		{
 			lock (Locker)
 			{
 				ClearUnsafe(tank.GetOldRectangle());
-				Draw(tank, ConsoleColor.Red);
-				Console.SetCursorPosition(0, Constants.MapHeight);
-			}
-		}
-
-		public void RedrawTankB(Tank tank)
-		{
-			lock (Locker)
-			{
-				ClearUnsafe(tank.GetOldRectangle());
-				Draw(tank, ConsoleColor.DarkBlue);
+				Draw(tank, team == Team.A ? ConsoleColor.Red : ConsoleColor.DarkBlue);
 				Console.SetCursorPosition(0, Constants.MapHeight);
 			}
 		}

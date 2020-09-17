@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using BattleCity.Core.Enums;
 using BattleCity.Core.Models;
 using BattleCity.Core.Models.Base;
 
@@ -12,9 +13,7 @@ namespace BattleCity.Core.Services.Abstractions
 
 		void Redraw(Bullet bullet);
 
-		void RedrawTankA(Tank tank);
-
-		void RedrawTankB(Tank tank);
+		void Redraw(Tank tank, Team team);
 
 		void Clear(Rectangle rectangle);
 	}

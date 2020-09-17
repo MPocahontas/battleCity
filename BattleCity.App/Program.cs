@@ -14,7 +14,7 @@ namespace BattleCity.App
 		{
 			Console.SetWindowSize(Constants.MapWidth + ConsoleExtraPart, Constants.MapHeight + ConsoleExtraPart);
 
-			var gameEngine = new GameEngine(new SimpleMapGenerator(), new ConsoleMapPainter(), new CollisionDetector());
+			var gameEngine = new GameEngine(new SimpleMapGenerator(), new ConsoleMapPainter(), new CollisionDetector(), new ActionResolver(new ConsoleMapPainter()));
 			
 			ConsoleKeyInfo keyInfo;
 			do
