@@ -144,8 +144,11 @@ namespace BattleCity.Core.Services.Implementations
 					var brickWall = _map.BrickWalls.FirstOrDefault(_ => _.IntersectsWith(bullet));
 					if (brickWall != null)
 					{
+						brickWall.Hit();
+						if (!brickWall.IsAlive) 
+							_actionResolver.Remove(brickWall);
+
 						_actionResolver.Remove(bullet, Position.Old);
-						_actionResolver.Remove(brickWall);
 						break;
 					}
 
