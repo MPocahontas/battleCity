@@ -146,7 +146,7 @@ namespace BattleCity.Core.Services.Implementations
 					if (otherBullet != null)
 					{
 						_actionResolver.Remove(bullet, Position.Old);
-						_actionResolver.Remove(bullet, Position.Current);
+						_actionResolver.Remove(otherBullet, Position.Current);
 						break;
 					}
 
