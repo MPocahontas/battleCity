@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleCity.App", "BattleCit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleCity.Core", "BattleCity.Core\BattleCity.Core.csproj", "{AD5DB21E-0900-47E1-A010-909A9E969710}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleCity.UnitTests", "BattleCity.UnitTests\BattleCity.UnitTests.csproj", "{DB3BE0E5-E6F8-457C-8D63-F07B522B9A1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleCity.UnitTests", "BattleCity.UnitTests\BattleCity.UnitTests.csproj", "{DB3BE0E5-E6F8-457C-8D63-F07B522B9A1B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
