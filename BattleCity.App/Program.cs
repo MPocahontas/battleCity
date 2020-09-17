@@ -23,9 +23,10 @@ namespace BattleCity.App
 				.AddSingleton<GameEngine>()
 				.BuildServiceProvider();
 
-			var gameEngine = serviceProvider.GetService<GameEngine>();
-			
-			Run(gameEngine);
+			using (var gameEngine = serviceProvider.GetService<GameEngine>())
+			{
+				Run(gameEngine);
+			}
 		}
 
 		private static void Run(GameEngine gameEngine)

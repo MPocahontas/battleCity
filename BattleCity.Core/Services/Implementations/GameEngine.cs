@@ -11,6 +11,9 @@ namespace BattleCity.Core.Services.Implementations
 {
 	public class GameEngine : IDisposable
 	{
+		/// <summary>
+		/// Lock for safety work with map
+		/// </summary>
 		private static readonly object MapLocker = new object();
 
 		private readonly IMapPainter _painter;
@@ -30,11 +33,16 @@ namespace BattleCity.Core.Services.Implementations
 			_painter = painter;
 			_mapAnalyzer = mapAnalyzer;
 			_actionResolver = actionResolver;
+
+			// generate map and respawn 2 tanks
 			_map = mapGenerator.Generate();
 			_map.RespawnTank(Team.A);
 			_map.RespawnTank(Team.B);
+
 			_painter.Draw(_map);
 			_actionResolver.Initialize(_map);
+
+			// run timer which will generate bonuses according to the given rules
 			_bonusGeneratorTimer = new Timer(GenerateBonusCallback, null, GetNextBonusGenerateTime(), Timeout.Infinite );
 
 		}
@@ -87,6 +95,8 @@ namespace BattleCity.Core.Services.Implementations
 		{
 			var bullet = CreateBulletModel(tank);
 			_actionResolver.Add(bullet);
+
+			// start bullet movement in separate thread 
 			Task.Factory.StartNew(() => MoveBullet(bullet), TaskCreationOptions.LongRunning);
 		}
 
@@ -110,12 +120,15 @@ namespace BattleCity.Core.Services.Implementations
 		private void MoveTank(Tank tank, Direction direction)
 		{
 			tank.Move(direction);
+
+			// if potential next tank move causes collisions - rollback
 			if (_mapAnalyzer.IsCollisionDetected(tank, _map))
 			{
 				tank.RollbackState();
 			}
 			else
 			{
+				// looking for bonus that we could intersect
 				var bonus = _map.Bonuses.FirstOrDefault(_ => _.IntersectsWith(tank));
 				if (bonus != null) 
 					_actionResolver.Apply(tank, bonus);
@@ -134,15 +147,19 @@ namespace BattleCity.Core.Services.Implementations
 						break;
 
 					bullet.Move();
+
+					// stop bullet if we it out of the map
 					if (_mapAnalyzer.IsOutOfTheMapBorders(bullet, Bullet.Width, Bullet.Height))
 					{
 						_actionResolver.Remove(bullet, Position.Old);
 						break;
 					}
 
+					// looking for brick wall that we could intersect
 					var brickWall = _map.BrickWalls.FirstOrDefault(_ => _.IntersectsWith(bullet));
 					if (brickWall != null)
 					{
+						// hit and check state
 						brickWall.Hit();
 						if (!brickWall.IsAlive) 
 							_actionResolver.Remove(brickWall);
@@ -151,12 +168,14 @@ namespace BattleCity.Core.Services.Implementations
 						break;
 					}
 
+					// if bullet intersects concrete wall - stop bullet
 					if (_map.ConcreteWalls.Any(_ => _.IntersectsWith(bullet)))
 					{
 						_actionResolver.Remove(bullet, Position.Old);
 						break;
 					}
 
+					// if bullet intersects other bullet - stop both
 					var otherBullet = _map.Bullets.FirstOrDefault(_ => _.IntersectsWith(bullet) && !_.Equals(bullet));
 					if (otherBullet != null)
 					{
@@ -165,6 +184,7 @@ namespace BattleCity.Core.Services.Implementations
 						break;
 					}
 
+					// if bullet intersects any tank - hit
 					if (_map.TankA != null && bullet.IntersectsWith(_map.TankA))
 					{
 						HitTank(_map.TankA, bullet);
@@ -177,6 +197,7 @@ namespace BattleCity.Core.Services.Implementations
 						break;
 					}
 
+					// if bullet intersects any flag - game over
 					if (bullet.IntersectsWith(_map.FlagA))
 					{
 						_isGameOver = true;
@@ -193,6 +214,7 @@ namespace BattleCity.Core.Services.Implementations
 						break;
 					}
 
+					// in case another bullet stopped this
 					if (!_map.Bullets.Any(_ => _.Equals(bullet)))
 					{
 						break;
@@ -217,6 +239,9 @@ namespace BattleCity.Core.Services.Implementations
 			_actionResolver.Remove(bullet, Position.Old);
 		}
 
+		/// <summary>
+		/// Creates tank and after a delay prints it on the map
+		/// </summary>
 		private void RunRespawn(Team team)
 		{
 			Task.Delay(TimeSpan.FromSeconds(Constants.RespawnDeltaInSeconds)).ContinueWith(t =>
@@ -228,12 +253,15 @@ namespace BattleCity.Core.Services.Implementations
 			});
 		}
 
+		// Callback for periodic bonus generation
 		private void GenerateBonusCallback(object state)
 		{
 			try
 			{
 				lock (MapLocker)
 				{
+					// in case of random 0 generate Armor Bonus in any free point on the map
+					// in case of random 1 - Attack bonus
 					if (new Random().Next(0, 100) % 2 == 0)
 					{
 						var freeSpacePoint =

@@ -43,12 +43,15 @@ namespace BattleCity.Core.Models
 			Team = team;
 			IsInvulnerable = true;
 			IsAlive = true;
+
+			// after 3 second (InvulnerabilityDurationInSeconds) tank should stop being invulnerable
 			Task.Delay(TimeSpan.FromSeconds(InvulnerabilityDurationInSeconds))
 				.ContinueWith(t => IsInvulnerable = false);
 		}
 
 		public void Move(Direction direction)
 		{
+			// store old tank position in case of rollback need
 			_oldX = X;
 			_oldY = Y;
 
@@ -71,6 +74,9 @@ namespace BattleCity.Core.Models
 			}
 		}
 
+		/// <summary>
+		/// rollback state to previous map position
+		/// </summary>
 		public void RollbackState()
 		{
 			X = _oldX;
@@ -80,6 +86,10 @@ namespace BattleCity.Core.Models
 		public Rectangle GetOldRectangle() 
 			=> new Rectangle(_oldX, _oldY, Width, Height);
 
+		/// <summary>
+		/// Changes tank state depending on the bonus
+		/// </summary>
+		/// <param name="bonus"></param>
 		public void Apply(IBonus bonus)
 		{
 			if (bonus is ArmorBonus)
@@ -87,22 +97,30 @@ namespace BattleCity.Core.Models
 			else if (bonus is AttackBonus)
 			{
 				_isSpeedIncreased = true;
+
+				// after 10 seconds (AttackBonusDurationInSeconds) speed should become normal
 				Task.Delay(TimeSpan.FromSeconds(AttackBonusDurationInSeconds))
 					.ContinueWith(t => _isSpeedIncreased = false);
 			}
 		}
 
+		/// <summary>
+		/// Change tank state after colliding with a bullet
+		/// </summary>
 		public void Hit()
 		{
+			// if tank is invulnerable - do nothing
 			if (IsInvulnerable)
 				return;
 
+			// remove armor if any
 			if (_isArmored)
 			{
 				_isArmored = false;
 				return;
 			}
 
+			// kill tank in other cases
 			IsAlive = false;
 		}
 	}

@@ -13,6 +13,10 @@ namespace BattleCity.Core.Models
 		private const int YSpeed = 1;
 
 		public Direction Direction { get; }
+
+		/// <summary>
+		/// an integer that indicates how fast the bullet will move
+		/// </summary>
 		public int Speed { get; }
 
 		public Bullet(int x, int y, Direction direction, int speed)
@@ -41,6 +45,10 @@ namespace BattleCity.Core.Models
 			}
 		}
 
+		/// <summary>
+		/// Returns rectangle for previous map position
+		/// </summary>
+		/// <returns></returns>
 		public Rectangle GetOldRectangle()
 		{
 			switch (Direction)

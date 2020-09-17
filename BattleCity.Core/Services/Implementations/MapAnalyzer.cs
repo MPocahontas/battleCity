@@ -8,8 +8,14 @@ using BattleCity.Core.Services.Abstractions;
 
 namespace BattleCity.Core.Services.Implementations
 {
+	/// <summary>
+	/// Class contains help methods for working with map
+	/// </summary>
 	public class MapAnalyzer : IMapAnalyzer
 	{
+		/// <summary>
+		/// Returns true if tank collised with any other object on map or left the map
+		/// </summary>
 		public bool IsCollisionDetected(Tank tank, Map map)
 		{
 			if (IsOutOfTheMapBorders(tank, Tank.Width, Tank.Height))
@@ -48,6 +54,11 @@ namespace BattleCity.Core.Services.Implementations
 			return false;
 		}
 
+
+		/// <summary>
+		/// Returns true if object out of map borders
+		/// </summary>
+		/// <returns></returns>
 		public bool IsOutOfTheMapBorders(BaseMapObject src, int width, int height)
 		{
 			if (src.X < 0 || src.X + width >= Constants.MapWidth)
@@ -59,6 +70,13 @@ namespace BattleCity.Core.Services.Implementations
 			return false;
 		}
 
+
+		/// <summary>
+		/// Looking for a rectangle on the map that can be placed without collisions
+		/// </summary>
+		/// <param name="width">Width of required rectangle</param>
+		/// <param name="height">Heigh of required rectangle</param>
+		/// <returns>Left-Top rectangle point</returns>
 		public Point GetFreeSpacePoint(int width, int height, Map map)
 		{
 			int x;

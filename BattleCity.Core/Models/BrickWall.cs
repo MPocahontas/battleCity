@@ -17,8 +17,10 @@ namespace BattleCity.Core.Models
 
 		public void Hit()
 		{
+			// first hit reduces armor
 			_armor--;
 
+			// second hit kills
 			if (_armor < default(int))
 				IsAlive = false;
 		}

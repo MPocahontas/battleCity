@@ -5,6 +5,9 @@ using BattleCity.Core.Services.Abstractions;
 
 namespace BattleCity.Core.Services.Implementations
 {
+	/// <summary>
+	/// Class responsible for map generation
+	/// </summary>
 	public class SimpleMapGenerator : IMapGenerator
 	{
 		public Map Generate()

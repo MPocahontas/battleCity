@@ -5,6 +5,9 @@ using BattleCity.Core.Models.Base;
 
 namespace BattleCity.Core.Models
 {
+	/// <summary>
+	/// Model for storing all objects in the game
+	/// </summary>
 	public class Map
 	{
 		private readonly Point _respawnA;

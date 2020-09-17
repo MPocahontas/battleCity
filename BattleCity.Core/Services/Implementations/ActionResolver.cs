@@ -5,6 +5,9 @@ using BattleCity.Core.Services.Abstractions;
 
 namespace BattleCity.Core.Services.Implementations
 {
+	/// <summary>
+	/// Сlass responsible for changing the state of the map and rendering during various game events
+	/// </summary>
 	public class ActionResolver : IActionResolver
 	{
 		private readonly IMapPainter _painter;
@@ -15,6 +18,9 @@ namespace BattleCity.Core.Services.Implementations
 			_painter = painter;
 		}
 
+		/// <summary>
+		///  Initializing with map. Mandatory method for working with the class.
+		/// </summary>
 		public void Initialize(Map map)
 			=> _map = map;
 
@@ -37,6 +43,11 @@ namespace BattleCity.Core.Services.Implementations
 			_painter.Clear(bonus.GetRectangle());
 		}
 
+		/// <summary>
+		/// Removes bullet from map and clears from the map
+		/// </summary>
+		/// <param name="bullet"></param>
+		/// <param name="position">Old - if we need to clear previous bullet position on map</param>
 		public void Remove(Bullet bullet, Position position)
 		{
 			_map.Remove(bullet);
