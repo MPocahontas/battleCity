@@ -8,11 +8,11 @@ using BattleCity.Core.Services.Abstractions;
 
 namespace BattleCity.Core.Services.Implementations
 {
-	public class CollisionDetector : ICollisionDetector
+	public class MapAnalyzer : IMapAnalyzer
 	{
-		public bool IsDetected(Tank tank, Map map)
+		public bool IsCollisionDetected(Tank tank, Map map)
 		{
-			if (IsOutOfTheMap(tank, Tank.Width, Tank.Height))
+			if (IsOutOfTheMapBorders(tank, Tank.Width, Tank.Height))
 				return true;
 
 			foreach (var brickWall in map.BrickWalls)
@@ -48,7 +48,7 @@ namespace BattleCity.Core.Services.Implementations
 			return false;
 		}
 
-		public bool IsOutOfTheMap(BaseMapObject src, int width, int height)
+		public bool IsOutOfTheMapBorders(BaseMapObject src, int width, int height)
 		{
 			if (src.X < 0 || src.X + width >= Constants.MapWidth)
 				return true;

@@ -14,7 +14,7 @@ namespace BattleCity.Core.Services.Implementations
 		private static readonly object MapLocker = new object();
 
 		private readonly IMapPainter _painter;
-		private readonly ICollisionDetector _collisionDetector;
+		private readonly IMapAnalyzer _mapAnalyzer;
 		private readonly IActionResolver _actionResolver;
 		private readonly Map _map;
 		private readonly Timer _bonusGeneratorTimer;
@@ -24,11 +24,11 @@ namespace BattleCity.Core.Services.Implementations
 		public GameEngine(
 			IMapGenerator mapGenerator,
 			IMapPainter painter,
-			ICollisionDetector collisionDetector,
+			IMapAnalyzer mapAnalyzer,
 			IActionResolver actionResolver)
 		{
 			_painter = painter;
-			_collisionDetector = collisionDetector;
+			_mapAnalyzer = mapAnalyzer;
 			_actionResolver = actionResolver;
 			_map = mapGenerator.Generate();
 			_map.RespawnTank(Team.A);
@@ -87,8 +87,7 @@ namespace BattleCity.Core.Services.Implementations
 		{
 			var bullet = CreateBulletModel(tank);
 			_actionResolver.Add(bullet);
-			var cancellationTokenSource = new CancellationTokenSource();
-			Task.Factory.StartNew(() => MoveBullet(bullet), cancellationTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+			Task.Factory.StartNew(() => MoveBullet(bullet), TaskCreationOptions.LongRunning);
 		}
 
 		private Bullet CreateBulletModel(Tank tank)
@@ -111,7 +110,7 @@ namespace BattleCity.Core.Services.Implementations
 		private void MoveTank(Tank tank, Direction direction)
 		{
 			tank.Move(direction);
-			if (_collisionDetector.IsDetected(tank, _map))
+			if (_mapAnalyzer.IsCollisionDetected(tank, _map))
 			{
 				tank.RollbackState();
 			}
@@ -135,7 +134,7 @@ namespace BattleCity.Core.Services.Implementations
 						break;
 
 					bullet.Move();
-					if (_collisionDetector.IsOutOfTheMap(bullet, Bullet.Width, Bullet.Height))
+					if (_mapAnalyzer.IsOutOfTheMapBorders(bullet, Bullet.Width, Bullet.Height))
 					{
 						_actionResolver.Remove(bullet, Position.Old);
 						break;
@@ -238,14 +237,14 @@ namespace BattleCity.Core.Services.Implementations
 					if (new Random().Next(0, 100) % 2 == 0)
 					{
 						var freeSpacePoint =
-							_collisionDetector.GetFreeSpacePoint(ArmorBonus.Width, ArmorBonus.Height, _map);
+							_mapAnalyzer.GetFreeSpacePoint(ArmorBonus.Width, ArmorBonus.Height, _map);
 						var bonus = new ArmorBonus(freeSpacePoint.X, freeSpacePoint.Y);
 						_actionResolver.Add(bonus);
 					}
 					else
 					{
 						var freeSpacePoint =
-							_collisionDetector.GetFreeSpacePoint(AttackBonus.Width, AttackBonus.Height, _map);
+							_mapAnalyzer.GetFreeSpacePoint(AttackBonus.Width, AttackBonus.Height, _map);
 						var bonus = new AttackBonus(freeSpacePoint.X, freeSpacePoint.Y);
 						_actionResolver.Add(bonus);
 					}

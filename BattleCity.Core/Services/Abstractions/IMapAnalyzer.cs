@@ -4,11 +4,11 @@ using BattleCity.Core.Models.Base;
 
 namespace BattleCity.Core.Services.Abstractions
 {
-	public interface ICollisionDetector
+	public interface IMapAnalyzer
 	{
-		bool IsDetected(Tank tank, Map map);
+		bool IsCollisionDetected(Tank tank, Map map);
 
-		bool IsOutOfTheMap(BaseMapObject src, int width, int height);
+		bool IsOutOfTheMapBorders(BaseMapObject src, int width, int height);
 
 		Point GetFreeSpacePoint(int width, int height, Map map);
 	}
