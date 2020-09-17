@@ -24,6 +24,19 @@ namespace BattleCity.Core.Services.Implementations
 			_painter.Draw(bonus);
 		}
 
+		public void Add(Bullet bullet)
+		{
+			_map.Add(bullet);
+			_painter.Draw(bullet);
+		}
+
+		public void Apply(Tank tank, IBonus bonus)
+		{
+			tank.Apply(bonus);
+			_map.Remove(bonus);
+			_painter.Clear(bonus.GetRectangle());
+		}
+
 		public void Remove(Bullet bullet, Position position)
 		{
 			_map.Remove(bullet);

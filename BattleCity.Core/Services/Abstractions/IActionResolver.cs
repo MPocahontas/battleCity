@@ -10,6 +10,10 @@ namespace BattleCity.Core.Services.Abstractions
 
 		void Add(IBonus bonus);
 
+		void Add(Bullet bullet);
+
+		void Apply(Tank tank, IBonus bonus);
+
 		void Remove(Bullet bullet, Position position);
 
 		void Remove(BrickWall brickWall);

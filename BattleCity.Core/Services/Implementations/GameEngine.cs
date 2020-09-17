@@ -52,8 +52,7 @@ namespace BattleCity.Core.Services.Implementations
 			lock (MapLocker)
 			{
 				var bullet = CreateBulletModel(_map.TankA);
-				_map.Add(bullet);
-				_painter.Draw(bullet);
+				_actionResolver.Add(bullet);
 				Task.Run(() => MoveBullet(bullet));
 			}
 		}
@@ -74,8 +73,7 @@ namespace BattleCity.Core.Services.Implementations
 			lock (MapLocker)
 			{
 				var bullet = CreateBulletModel(_map.TankB);
-				_map.Add(bullet);
-				_painter.Draw(bullet);
+				_actionResolver.Add(bullet);
 				Task.Run(() => MoveBullet(bullet));
 			}
 		}
@@ -106,12 +104,9 @@ namespace BattleCity.Core.Services.Implementations
 			}
 			else
 			{
-				var bonuses = _map.Bonuses.Where(_ => _.GetRectangle().IntersectsWith(tank.GetRectangle()));
-				foreach (var bonus in bonuses)
-				{
-					tank.Apply(bonus);
-					_painter.Clear(bonus.GetRectangle());
-				}
+				var bonus = _map.Bonuses.FirstOrDefault(_ => _.IntersectsWith(tank));
+				if (bonus != null) 
+					_actionResolver.Apply(tank, bonus);
 
 				_painter.Redraw(tank);
 			}
