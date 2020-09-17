@@ -50,7 +50,7 @@ namespace BattleCity.App
 				Draw(map.FlagB, Colors.TeamB);
 				Draw(map.TankB, Colors.TeamB);
 
-				Console.SetCursorPosition(0, Constants.MapHeight);
+				ResetCursor();
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace BattleCity.App
 			lock (Locker)
 			{
 				DrawUnsafe(bonus);
-				Console.SetCursorPosition(0, Constants.MapHeight);
+				ResetCursor();
 			}
 		}
 
@@ -68,7 +68,7 @@ namespace BattleCity.App
 			lock (Locker)
 			{
 				Draw(bullet, Colors.Bullet);
-				Console.SetCursorPosition(0, Constants.MapHeight);
+				ResetCursor();
 			}
 		}
 
@@ -78,7 +78,7 @@ namespace BattleCity.App
 			{
 				ClearUnsafe(bullet.GetOldRectangle());
 				Draw(bullet, Colors.Bullet);
-				Console.SetCursorPosition(0, Constants.MapHeight);
+				ResetCursor();
 			}
 		}
 
@@ -88,7 +88,7 @@ namespace BattleCity.App
 			{
 				ClearUnsafe(tank.GetOldRectangle());
 				Draw(tank, tank.Team == Team.A ? Colors.TeamA : Colors.TeamB);
-				Console.SetCursorPosition(0, Constants.MapHeight);
+				ResetCursor();
 			}
 		}
 
@@ -97,7 +97,7 @@ namespace BattleCity.App
 			lock (Locker)
 			{
 				ClearUnsafe(rectangle);
-				Console.SetCursorPosition(0, Constants.MapHeight);
+				ResetCursor();
 			}
 		}
 
@@ -120,8 +120,6 @@ namespace BattleCity.App
 					Console.Write(" ");
 				}
 			}
-
-			Console.SetCursorPosition(0, Constants.MapHeight);
 		}
 
 		private void DrawUnsafe(IBonus bonus)
@@ -211,5 +209,8 @@ namespace BattleCity.App
 
 			Console.ResetColor();
 		}
+
+		private void ResetCursor()
+			=> Console.SetCursorPosition(0, Constants.MapHeight);
 	}
 }
