@@ -21,5 +21,8 @@ namespace BattleCity.Core.Models.Base
 
 		public Rectangle GetRectangle() 
 			=> new Rectangle(X, Y, _width, _height);
+
+		public bool IntersectsWith(BaseMapObject obj)
+			=> GetRectangle().IntersectsWith(obj.GetRectangle());
 	}
 }

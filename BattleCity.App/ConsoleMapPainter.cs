@@ -59,6 +59,16 @@ namespace BattleCity.App
 			lock (Locker)
 			{
 				DrawUnsafe(bonus);
+				Console.SetCursorPosition(0, Constants.MapHeight);
+			}
+		}
+
+		public void Draw(Bullet bullet)
+		{
+			lock (Locker)
+			{
+				Draw(bullet, ConsoleColor.Gray);
+				Console.SetCursorPosition(0, Constants.MapHeight);
 			}
 		}
 
@@ -72,12 +82,12 @@ namespace BattleCity.App
 			}
 		}
 
-		public void Redraw(Tank tank, Team team)
+		public void Redraw(Tank tank)
 		{
 			lock (Locker)
 			{
 				ClearUnsafe(tank.GetOldRectangle());
-				Draw(tank, team == Team.A ? ConsoleColor.Red : ConsoleColor.DarkBlue);
+				Draw(tank, tank.Team == Team.A ? ConsoleColor.Red : ConsoleColor.DarkBlue);
 				Console.SetCursorPosition(0, Constants.MapHeight);
 			}
 		}

@@ -38,35 +38,49 @@ namespace BattleCity.Core.Services.Implementations
 
 		public void MoveTankA(Direction direction)
 		{
-			if (_map.TankA != null)
+			lock (MapLocker)
 			{
-				MoveTank(_map.TankA, direction, Team.A);
+				if (_map.TankA != null)
+				{
+					MoveTank(_map.TankA, direction);
+				}
 			}
 		}
 
 		public void ShootTankA()
 		{
-			var bullet = CreateBullet(_map.TankA);
-			_map.Add(bullet);
-			Task.Run(() => MoveBullet(bullet));
+			lock (MapLocker)
+			{
+				var bullet = CreateBulletModel(_map.TankA);
+				_map.Add(bullet);
+				_painter.Draw(bullet);
+				Task.Run(() => MoveBullet(bullet));
+			}
 		}
 
 		public void MoveTankB(Direction direction)
 		{
-			if (_map.TankB != null)
+			lock (MapLocker)
 			{
-				MoveTank(_map.TankB, direction, Team.B);
+				if (_map.TankB != null)
+				{
+					MoveTank(_map.TankB, direction);
+				}
 			}
 		}
 
 		public void ShootTankB()
 		{
-			var bullet = CreateBullet(_map.TankB);
-			_map.Add(bullet);
-			Task.Run(() => MoveBullet(bullet));
+			lock (MapLocker)
+			{
+				var bullet = CreateBulletModel(_map.TankB);
+				_map.Add(bullet);
+				_painter.Draw(bullet);
+				Task.Run(() => MoveBullet(bullet));
+			}
 		}
 
-		private Bullet CreateBullet(Tank tank)
+		private Bullet CreateBulletModel(Tank tank)
 		{
 			switch (tank.GunDirection)
 			{
@@ -83,7 +97,7 @@ namespace BattleCity.Core.Services.Implementations
 			}
 		}
 
-		private void MoveTank(Tank tank, Direction direction, Team team)
+		private void MoveTank(Tank tank, Direction direction)
 		{
 			tank.Move(direction);
 			if (_collisionDetector.IsDetected(tank, _map))
@@ -99,7 +113,7 @@ namespace BattleCity.Core.Services.Implementations
 					_painter.Clear(bonus.GetRectangle());
 				}
 
-				_painter.Redraw(tank, team);
+				_painter.Redraw(tank);
 			}
 		}
 
@@ -109,16 +123,17 @@ namespace BattleCity.Core.Services.Implementations
 			{
 				lock (MapLocker)
 				{
+					if (bullet == null)
+						break;
+
 					bullet.Move();
 					if (_collisionDetector.IsOutOfTheMap(bullet, Bullet.Width, Bullet.Height))
 					{
-						_map.Remove(bullet);
-						_painter.Clear(bullet.GetOldRectangle());
+						_actionResolver.Remove(bullet, Position.Old);
 						break;
 					}
 
-					var brickWall =
-						_map.BrickWalls.FirstOrDefault(_ => _.GetRectangle().IntersectsWith(bullet.GetRectangle()));
+					var brickWall = _map.BrickWalls.FirstOrDefault(_ => _.IntersectsWith(bullet));
 					if (brickWall != null)
 					{
 						_actionResolver.Remove(bullet, Position.Old);
@@ -126,13 +141,13 @@ namespace BattleCity.Core.Services.Implementations
 						break;
 					}
 
-					if (_map.ConcreteWalls.Any(_ => _.GetRectangle().IntersectsWith(bullet.GetRectangle())))
+					if (_map.ConcreteWalls.Any(_ => _.IntersectsWith(bullet)))
 					{
 						_actionResolver.Remove(bullet, Position.Old);
 						break;
 					}
 
-					var otherBullet = _map.Bullets.FirstOrDefault(_ => _.GetRectangle().IntersectsWith(bullet.GetRectangle()) && !_.Equals(bullet));
+					var otherBullet = _map.Bullets.FirstOrDefault(_ => _.IntersectsWith(bullet) && !_.Equals(bullet));
 					if (otherBullet != null)
 					{
 						_actionResolver.Remove(bullet, Position.Old);
@@ -140,26 +155,25 @@ namespace BattleCity.Core.Services.Implementations
 						break;
 					}
 
-
-					if (_map.TankA != null && bullet.GetRectangle().IntersectsWith(_map.TankA.GetRectangle()))
+					if (_map.TankA != null && bullet.IntersectsWith(_map.TankA))
 					{
-						HitTank(_map.TankA, Team.A, bullet);
+						HitTank(_map.TankA, _map.TankA.Team, bullet);
 						break;
 					}
 
-					if (_map.TankB != null && bullet.GetRectangle().IntersectsWith(_map.TankB.GetRectangle()))
+					if (_map.TankB != null && bullet.IntersectsWith(_map.TankB))
 					{
-						HitTank(_map.TankB, Team.B, bullet);
+						HitTank(_map.TankB, _map.TankB.Team, bullet);
 						break;
 					}
 
-					if (bullet.GetRectangle().IntersectsWith(_map.FlagA.GetRectangle()))
+					if (bullet.IntersectsWith(_map.FlagA))
 					{
 						// game over
 						break;
 					}
 
-					if (bullet.GetRectangle().IntersectsWith(_map.FlagB.GetRectangle()))
+					if (bullet.IntersectsWith(_map.FlagB))
 					{
 						// game over
 						break;
@@ -179,7 +193,7 @@ namespace BattleCity.Core.Services.Implementations
 
 		private void HitTank(Tank tank, Team team, Bullet bullet)
 		{
-			_actionResolver.Hit(tank, team);
+			_actionResolver.Hit(tank);
 
 			if (tank == null)
 			{
@@ -191,7 +205,7 @@ namespace BattleCity.Core.Services.Implementations
 
 		private void RunRespawn(Team team)
 		{
-			Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(t =>
+			Task.Delay(TimeSpan.FromSeconds(Constants.RespawnDeltaInSeconds)).ContinueWith(t =>
 			{
 				lock (MapLocker)
 				{
@@ -204,21 +218,22 @@ namespace BattleCity.Core.Services.Implementations
 		{
 			try
 			{
-				if (new Random().Next(0, 100) % 2 == 0)
+				lock (MapLocker)
 				{
-					var freeSpacePoint =
-						_collisionDetector.GetFreeSpacePoint(ArmorBonus.Width, ArmorBonus.Height, _map);
-					var bonus = new ArmorBonus(freeSpacePoint.X, freeSpacePoint.Y);
-					_map.Add(bonus);
-					_painter.Draw(bonus);
-				}
-				else
-				{
-					var freeSpacePoint =
-						_collisionDetector.GetFreeSpacePoint(AttackBonus.Width, AttackBonus.Height, _map);
-					var bonus = new AttackBonus(freeSpacePoint.X, freeSpacePoint.Y);
-					_map.Add(bonus);
-					_painter.Draw(bonus);
+					if (new Random().Next(0, 100) % 2 == 0)
+					{
+						var freeSpacePoint =
+							_collisionDetector.GetFreeSpacePoint(ArmorBonus.Width, ArmorBonus.Height, _map);
+						var bonus = new ArmorBonus(freeSpacePoint.X, freeSpacePoint.Y);
+						_actionResolver.Add(bonus);
+					}
+					else
+					{
+						var freeSpacePoint =
+							_collisionDetector.GetFreeSpacePoint(AttackBonus.Width, AttackBonus.Height, _map);
+						var bonus = new AttackBonus(freeSpacePoint.X, freeSpacePoint.Y);
+						_actionResolver.Add(bonus);
+					}
 				}
 			}
 			finally 

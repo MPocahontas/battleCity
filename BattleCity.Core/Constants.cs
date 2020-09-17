@@ -7,5 +7,6 @@
 		public const int DefaultBulletSpeed = 100;
 		public const int MinimumNextBonusGenerateTimeInSeconds = 15;
 		public const int NextBonusGenerateTimeDeltaInSeconds = 20;
+		public const int RespawnDeltaInSeconds = 2;
 	}
 }

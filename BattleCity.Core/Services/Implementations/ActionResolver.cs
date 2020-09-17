@@ -1,6 +1,6 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using BattleCity.Core.Enums;
+﻿using BattleCity.Core.Enums;
 using BattleCity.Core.Models;
+using BattleCity.Core.Models.Base;
 using BattleCity.Core.Services.Abstractions;
 
 namespace BattleCity.Core.Services.Implementations
@@ -18,6 +18,12 @@ namespace BattleCity.Core.Services.Implementations
 		public void Initialize(Map map)
 			=> _map = map;
 
+		public void Add(IBonus bonus)
+		{
+			_map.Add(bonus);
+			_painter.Draw(bonus);
+		}
+
 		public void Remove(Bullet bullet, Position position)
 		{
 			_map.Remove(bullet);
@@ -34,12 +40,12 @@ namespace BattleCity.Core.Services.Implementations
 			_painter.Clear(brickWall.GetRectangle());
 		}
 
-		public void Hit(Tank tank, Team team)
+		public void Hit(Tank tank)
 		{
 			tank.Hit();
 			if (!tank.IsAlive)
 			{
-				_map.KillTank(team);
+				_map.KillTank(tank.Team);
 				_painter.Clear(tank.GetRectangle());
 			}
 		}
@@ -48,9 +54,9 @@ namespace BattleCity.Core.Services.Implementations
 		{
 			_map.RespawnTank(team);
 			if (team == Team.A)
-				_painter.Redraw(_map.TankA, team);
+				_painter.Redraw(_map.TankA);
 			else if (team == Team.B) 
-				_painter.Redraw(_map.TankB, team);
+				_painter.Redraw(_map.TankB);
 		}
 	}
 }

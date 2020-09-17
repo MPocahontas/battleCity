@@ -86,9 +86,9 @@ namespace BattleCity.Core.Models
 		public void RespawnTank(Team team)
 		{
 			if (team == Team.A)
-				TankA = new Tank(_respawnA.X, _respawnA.Y, Direction.Right);
+				TankA = new Tank(_respawnA.X, _respawnA.Y, Direction.Right, Team.A);
 			else if (team == Team.B) 
-				TankB = new Tank(_respawnB.X, _respawnB.Y, Direction.Left);
+				TankB = new Tank(_respawnB.X, _respawnB.Y, Direction.Left, Team.B);
 		}
 	}
 }

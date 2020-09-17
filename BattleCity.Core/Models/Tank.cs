@@ -24,6 +24,7 @@ namespace BattleCity.Core.Models
 		public bool IsInvulnerable { private get; set; }
 
 		public Direction GunDirection { get; private set; }
+		public Team Team { get; }
 
 		public int BulletSpeed => _isSpeedIncreased
 			? Constants.DefaultBulletSpeed * SpeedMultiplier 
@@ -34,11 +35,12 @@ namespace BattleCity.Core.Models
 		private bool _isArmored;
 		private bool _isSpeedIncreased;
 
-		public Tank(int x, int y, Direction gunDirection) : base(x, y, Width, Height)
+		public Tank(int x, int y, Direction gunDirection, Team team) : base(x, y, Width, Height)
 		{
 			_oldX = x;
 			_oldY = y;
 			GunDirection = gunDirection;
+			Team = team;
 			IsInvulnerable = true;
 			Task.Delay(InvulnerabilityDurationInSeconds)
 				.ContinueWith(t => IsInvulnerable = false);
