@@ -157,13 +157,13 @@ namespace BattleCity.Core.Services.Implementations
 
 					if (_map.TankA != null && bullet.IntersectsWith(_map.TankA))
 					{
-						HitTank(_map.TankA, _map.TankA.Team, bullet);
+						HitTank(_map.TankA, bullet);
 						break;
 					}
 
 					if (_map.TankB != null && bullet.IntersectsWith(_map.TankB))
 					{
-						HitTank(_map.TankB, _map.TankB.Team, bullet);
+						HitTank(_map.TankB, bullet);
 						break;
 					}
 
@@ -191,13 +191,13 @@ namespace BattleCity.Core.Services.Implementations
 			}
 		}
 
-		private void HitTank(Tank tank, Team team, Bullet bullet)
+		private void HitTank(Tank tank, Bullet bullet)
 		{
 			_actionResolver.Hit(tank);
 
-			if (tank == null)
+			if (!tank.IsAlive)
 			{
-				RunRespawn(team);
+				RunRespawn(tank.Team);
 			}
 
 			_actionResolver.Remove(bullet, Position.Old);

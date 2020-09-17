@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
+using BattleCity.Core.Enums;
 using BattleCity.Core.Models;
 using BattleCity.Core.Models.Base;
 using BattleCity.Core.Services.Abstractions;
@@ -32,14 +33,15 @@ namespace BattleCity.Core.Services.Implementations
 					return true;
 			}
 
-			if (tank.Equals(map.TankA))
+			if (tank.Team == Team.A && map.TankB != null)
 			{
-				if (tank.GetRectangle().IntersectsWith(map.TankB.GetRectangle()))
+				if (tank.IntersectsWith(map.TankB))
 					return true;
 			}
-			else
+
+			if (tank.Team == Team.B && map.TankA != null)
 			{
-				if (tank.GetRectangle().IntersectsWith(map.TankA.GetRectangle()))
+				if (tank.IntersectsWith(map.TankA))
 					return true;
 			}
 

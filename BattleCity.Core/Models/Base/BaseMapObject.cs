@@ -23,6 +23,6 @@ namespace BattleCity.Core.Models.Base
 			=> new Rectangle(X, Y, _width, _height);
 
 		public bool IntersectsWith(BaseMapObject obj)
-			=> GetRectangle().IntersectsWith(obj.GetRectangle());
+			=> obj != null && GetRectangle().IntersectsWith(obj.GetRectangle());
 	}
 }
