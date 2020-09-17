@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Threading;
 using System.Threading.Tasks;
 using BattleCity.Core.Enums;
 using BattleCity.Core.Models.Base;
@@ -24,6 +23,7 @@ namespace BattleCity.Core.Models
 		public bool IsInvulnerable { private get; set; }
 
 		public Direction GunDirection { get; private set; }
+		
 		public Team Team { get; }
 
 		public int BulletSpeed => _isSpeedIncreased
@@ -42,7 +42,8 @@ namespace BattleCity.Core.Models
 			GunDirection = gunDirection;
 			Team = team;
 			IsInvulnerable = true;
-			Task.Delay(InvulnerabilityDurationInSeconds)
+			IsAlive = true;
+			Task.Delay(TimeSpan.FromSeconds(InvulnerabilityDurationInSeconds))
 				.ContinueWith(t => IsInvulnerable = false);
 		}
 
@@ -87,8 +88,7 @@ namespace BattleCity.Core.Models
 			{
 				_isSpeedIncreased = true;
 				Task.Delay(TimeSpan.FromSeconds(AttackBonusDurationInSeconds))
-					.ContinueWith(t => DecreaseSpeed());
-				Task.Run(DecreaseSpeed);
+					.ContinueWith(t => _isSpeedIncreased = false);
 			}
 		}
 
@@ -104,11 +104,6 @@ namespace BattleCity.Core.Models
 			}
 
 			IsAlive = false;
-		}
-
-		public void DecreaseSpeed()
-		{
-			_isSpeedIncreased = false;
 		}
 	}
 }
