@@ -12,6 +12,10 @@ using Xunit;
 
 namespace BattleCity.UnitTests
 {
+	/// <summary>
+	/// Class for ActionResolver unit testing
+	/// Only 2 methods have been tested as an example
+	/// </summary>
 	public class ActionResolverTests
 	{
 		private readonly Point _respawnA = new Point(40, 40);
@@ -43,6 +47,7 @@ namespace BattleCity.UnitTests
 
 		[Theory]
 		[InlineData(Team.A)]
+		[InlineData(Team.B)]
 		public void Should_RespawnTankWorksCorrectForAllTeams(Team team)
 		{
 			// Arrange
