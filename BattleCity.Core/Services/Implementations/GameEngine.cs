@@ -94,10 +94,14 @@ namespace BattleCity.Core.Services.Implementations
 		private void Shoot(Tank tank)
 		{
 			var bullet = CreateBulletModel(tank);
-			_actionResolver.Add(bullet);
 
-			// start bullet movement in separate thread 
-			Task.Factory.StartNew(() => MoveBullet(bullet), TaskCreationOptions.LongRunning);
+			if (!_mapAnalyzer.IsOutOfTheMapBorders(bullet, Bullet.Width, Bullet.Height))
+			{
+				_actionResolver.Add(bullet);
+
+				// start bullet movement in separate thread 
+				Task.Factory.StartNew(() => MoveBullet(bullet), TaskCreationOptions.LongRunning);
+			}
 		}
 
 		private Bullet CreateBulletModel(Tank tank)
