@@ -45,6 +45,8 @@ namespace BattleCity.UnitTests
 			mapPainterMock.Verify(_ => _.Draw(bonusMock.Object), Times.Once);
 		}
 
+
+		//dev commit 1
 		[Theory]
 		[InlineData(Team.A)]
 		[InlineData(Team.B)]
