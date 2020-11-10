@@ -27,6 +27,7 @@ namespace BattleCity.UnitTests
 			_map = CreateEmptyMap();
 		}
 
+		//test commit 1
 		[Fact]
 		public void Should_AddBonusWorksCorrect()
 		{
